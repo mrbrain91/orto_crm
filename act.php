@@ -1,0 +1,443 @@
+<?php
+
+include('settings.php');
+include('bot_lib.php');
+
+if (!isset($_SESSION['usersname'])) {
+  header("location: index.php");
+}
+
+
+$display = 'none';
+$btn_display = 'none';
+//---get counterparties
+$sql = "SELECT * FROM counterparties_tbl";
+$counterparties_tbl = mysqli_query ($connect, $sql);
+//---
+
+if (isset($_POST['id_contractor'])) {
+    $display = 'true';
+    $btn_display = 'true';
+    $id_contractor = $_POST['id_contractor'];
+
+    $contractor = get_contractor($connect, $id_contractor); 
+
+    $from_date = $_POST['from_date'];
+    $to_date = $_POST['to_date'];
+
+    
+
+
+    $qr_start = "SELECT * FROM debts WHERE id_counterpartie = '$id_contractor' AND prepayment=0 AND order_date < '$from_date' ORDER BY order_date";
+    $rs_qr_start = mysqli_query ($connect, $qr_start);
+    
+    $sum_debt_saldo = 0;
+    $sum_main_prepayment_saldo = 0;
+
+    while ($row_qr = mysqli_fetch_array($rs_qr_start)) {
+        $sum_debt_saldo = $sum_debt_saldo + $row_qr['debt'];
+        $sum_main_prepayment_saldo = $sum_main_prepayment_saldo + $row_qr['main_prepayment'];
+    }
+
+
+    if ($sum_debt_saldo > $sum_main_prepayment_saldo) {
+        $sum_debt_saldo =  $sum_debt_saldo - $sum_main_prepayment_saldo;
+        $sum_main_prepayment_saldo = 0;
+    }elseif ($sum_debt_saldo < $sum_main_prepayment_saldo) {
+        $sum_main_prepayment_saldo = $sum_main_prepayment_saldo - $sum_debt_saldo;
+        $sum_debt_saldo = 0;
+    }else {
+        $sum_debt_saldo = 0;
+        $sum_main_prepayment_saldo = 0;
+    }
+
+
+    $qr = "SELECT * FROM debts WHERE id_counterpartie = '$id_contractor' AND prepayment=0 AND order_date >= '$from_date' AND order_date <= '$to_date' ORDER BY order_date";
+    $rs_qr = mysqli_query ($connect, $qr);
+
+
+    
+}
+
+$currentDate = date("Y-m-d");
+$endOfDay = '23:59:59';
+$dateValue = $currentDate . ' ' . $endOfDay;
+
+
+?>
+
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous"> -->
+    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous"> -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/bootstrap-grid.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.default.min.css" />
+    <link rel="stylesheet" href="css/style.css">
+    <title>ortosavdo</title>
+</head>
+<body>  
+
+<?php include 'partSite/nav.php'; ?>
+
+<div class="page_name">
+    <div class="container-fluid">
+        <i class="fa fa-clone" aria-hidden="true"></i>
+        <i class="fa fa-angle-double-right right_cus"></i>
+        <span class="right_cus">Акт-сверки</span>
+    </div>    
+</div>
+
+
+
+<!-- Tab item -->
+<ul class="nav nav-tabs">
+  <li class="nav-item">
+    <a style="color: #666666; border-bottom: 2px solid #5db85c;" class="nav-link active" aria-current="page" href="#">Акт сверки с клиентами</a>
+  </li>
+  <li class="nav-item">
+    <a style="color: #666666;" class="nav-link" href="act_supplier.php">Акт сверки с поставщиками</a>
+  </li>
+</ul>
+<!-- End tab item -->
+
+
+
+<div class="toolbar">
+        <div class="container-fluid">
+           <!-- <a href="#"> <button type="button" class="btn btn-success">Взаимозачет</button> </a> -->
+           <!-- <a href="add_order.php"> <button type="button" class="btn btn-primary">должники</button> </a> -->
+          <input class="btn btn-success" type="submit" form="order_form" name="submit" value="сформировать акт" />
+          <button style="display:<?php echo $btn_display; ?>" class="btn btn-info" onclick="exportTableToExcel('tblData', 'act')">скачать (.xls)</button>
+
+        </div>
+</div>
+
+<section class="card_head dotedline">
+    <div class="container-fluid">
+        <form action="#" method="POST" class="horizntal-form" id="order_form">
+            <div class="row">
+                <div class="col-md-3">
+                    <span>Контрагент</span>
+                </div>
+                <div class="col-md-2">
+                        <span>Дата начала</span>
+                </div>&ensp;
+                <div class="col-md-2">
+                        <span>Дата конца</span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3"> 
+                    <select required class="normalize" name="id_contractor" form="order_form">
+                        <option value="">Выберите: </option>
+                        <?php    
+                            while ($option_contractor = mysqli_fetch_array($counterparties_tbl)) {    
+                        ?>
+                            <option value="<?php echo $option_contractor["id"];?>"><?php echo $option_contractor["name"]?></option>
+                        <?php
+                            };    
+                        ?>
+                    </select>
+                </div>
+                <div class="col-md-2"> 
+                    <input required type="date" value="2023-01-01" class="form-control" name="from_date" form="order_form">
+                </div>
+                -
+                <div class="col-md-2">
+                    <input required type="datetime-local" value="<?php echo $dateValue; ?>" class="form-control" name="to_date" form="order_form">
+                    <!-- <input required type="date" value="<?php echo date("Y-m-d"); ?>" class="form-control" name="to_date" form="order_form"> -->
+                </div>    
+            </div>
+        </form>
+    </div>
+</section>
+
+
+<div class="all_table" style='display: <?php echo $display;?>' >
+    <div class="container-fluid">
+        <div class="table_wrap">
+            <table id="tblData" class="table table-striped table-bordered act_td" style="width:70%; margin: 0 auto; margin-top: 30px;">
+                    <tr>
+                        <td class="non_border head_txt" colspan="8">
+                            <span>Акт сверки</span> <br> 
+                        
+                            взаимных расчетов за период: <?php echo $date = date("d.m.Y", strtotime($from_date)); ?> - <?php echo $date = date("d.m.Y", strtotime($to_date)); ?> <br>
+                            между ООО "ORTOPHARM" и <?php echo $contractor["name"];?> 
+                            <!-- по договору Основной договор  -->
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="non_border" colspan="8"> Мы, нижеподписавшиеся, ООО "ORTOPHARM", с одной стороны, и <?php echo $contractor["name"];?>, с другой стороны, составили настоящий акт сверки в том, что состояние взаимных расчетов по данным учета следующее:</td>
+                    </tr>
+                    <tr>
+                        <td colspan="4">По данным ООО "ORTOPHARM", сум.</td>
+                        <td colspan="4">По данным <?php echo $contractor["name"];?>, сум.</td>
+                    </tr>
+                    <tr>
+                        <th scope="col">Дата</th>
+                        <th scope="col">Документ</th>
+                        <th scope="col">Дебет</th>
+                        <th scope="col">Кредит</th>
+                        <th scope="col">Дата</th>
+                        <th scope="col">Документ</th>
+                        <th scope="col">Дебет</th>
+                        <th scope="col">Кредит</th>
+                    </tr>
+            
+
+                    
+                    <tr>
+                        <td class="ordernum">Сальдо начальное</th>
+                        <td class="ordernum">-</th>
+                        <td class="ordernum" scope="col"><?php echo number_format($sum_debt_saldo, 0, ',', ' ') ?></th>
+                        <td class="ordernum" scope="col"><?php echo number_format($sum_main_prepayment_saldo, 0, ',', ' ') ?></th>
+                        <td class="ordernum">Сальдо начальное</th>
+                        <td class="ordernum">-</th>
+                        <td class="ordernum" scope="col"><?php echo number_format($sum_main_prepayment_saldo, 0, ',', ' ') ?></th>
+                        <td class="ordernum" scope="col"><?php echo number_format($sum_debt_saldo, 0, ',', ' ') ?></th>
+                    </tr>   
+                                
+                    <?php     
+                        $i = 0;
+                        $sum_debt = 0;
+                        $sum_prepayment = 0;
+                        $row_display = 'true';
+                        while ($row = mysqli_fetch_array($rs_qr)) {
+                        $i++;
+                        $sum_debt += $row["debt"];
+                        $sum_prepayment += $row["main_prepayment"];
+                        if ($row["sts"] == 0) {
+                            $document = 'Продажа';
+                        }elseif ($row["sts"] == 2) {
+                            $document = 'Оплата';
+                        }elseif ($row["sts"] == 3) {
+                            $document = 'Возврат';
+                        }
+                        
+                    ?> 
+
+                    <tr>
+                        <td><?php echo $date = date("d.m.Y", strtotime($row["order_date"])); ?></td>
+                        <td><?php echo $document; ?></td>
+
+                        <td><?php 
+                            if ($row["debt"] == "0") {
+                                echo '';
+                            }else{
+                                echo number_format($row["debt"], 0, ',', ' ');
+                            }
+                            ?>
+                        </td>
+                        <td><?php 
+                            if ($row["main_prepayment"] == "0") {
+                                echo '';
+                            }else{
+                                echo number_format($row["main_prepayment"], 0, ',', ' ');
+                            }
+                            ?>
+                        </td>
+
+                        <td><?php echo $date = date("d.m.Y", strtotime($row["order_date"])); ?></td>
+                        <td><?php echo $document; ?></td>
+
+                        <td><?php 
+                            if ($row["main_prepayment"] == "0") {
+                                echo '';
+                            }else{
+                                echo number_format($row["main_prepayment"], 0, ',', ' ');
+                            }
+                            ?>
+                        </td>
+
+                        <td><?php 
+                            if ($row["debt"] == "0") {
+                                echo '';
+                            }else{
+                                echo number_format($row["debt"], 0, ',', ' ');
+                            }
+                            ?>
+                        </td>
+                    </tr>
+
+                    <?php       
+                        };      
+                        $display_non_debt = 'none';
+                        $display_debt_1 = 'none';
+                        $display_debt_2 = 'none';
+                        $sum_last_debt = 0;
+                        $sum_last_prepayment = 0;
+                        if ($sum_debt_saldo != '0') {
+                            $sum_debt_t = $sum_debt;
+                            $sum_debt = $sum_debt + $sum_debt_saldo;
+                        }else {
+                            $sum_debt_t = $sum_debt;
+                        }
+                        
+                        
+                        if ($sum_main_prepayment_saldo != '0') {
+                            $sum_prepayment_t = $sum_prepayment;
+                            $sum_prepayment = $sum_prepayment + $sum_main_prepayment_saldo; 
+                        }else {
+                            $sum_prepayment_t = $sum_prepayment;
+                        }
+
+                        if ($sum_debt > $sum_prepayment) {
+                            $sum_last_debt =  $sum_debt - $sum_prepayment;
+                            
+                        }else if ($sum_debt < $sum_prepayment) {
+                            $sum_last_prepayment = $sum_prepayment - $sum_debt;
+                        }
+                        
+                        if ($sum_last_debt == 0 AND $sum_last_prepayment == 0) {
+                            $display_non_debt = "true";
+                        }elseif ($sum_last_debt != 0) {
+                            $display_debt_1 = "true";
+                        }elseif ($sum_last_prepayment != 0) {
+                            $display_debt_2 = "true";
+                        }
+                    ?>
+                    <tr>
+                        <td class="ordernum">Обороты за период:</td>
+                        <td class="ordernum">-</td>
+                        <td class="ordernum"><?php echo number_format($sum_debt_t, 0, ',', ' '); ?></td>
+                        <td class="ordernum"><?php echo number_format($sum_prepayment_t, 0, ',', ' '); ?></td>
+                        <td class="ordernum">Обороты за период:</td>
+                        <td class="ordernum">-</td>
+                        <td class="ordernum"><?php echo number_format($sum_prepayment_t, 0, ',', ' '); ?></td>
+                        <td class="ordernum"><?php echo number_format($sum_debt_t, 0, ',', ' '); ?></td>
+                    </tr>
+                    <tr style="border-bottom-style: 1px solid green">
+                        <td class="ordernum">Сальдо конечное:</th>
+                        <td class="ordernum">-</th>
+                        <td class="ordernum"><?php 
+                        echo number_format($sum_last_debt, 0, ',', ' '); 
+                        ?></td>
+                        <td class="ordernum"><?php 
+                        echo number_format($sum_last_prepayment, 0, ',', ' '); 
+                        ?></td>
+                        <td class="ordernum">Сальдо конечное:</th>
+                        <td class="ordernum">-</th>
+                        <td class="ordernum"><?php 
+                        echo number_format($sum_last_prepayment, 0, ',', ' '); 
+                        ?></td>
+                        <td class="ordernum"><?php 
+                        echo number_format($sum_last_debt, 0, ',', ' '); 
+                        ?></td>
+                    </tr>  
+                    <tr class="non_border_lr">
+                        <td colspan="8"> </td>
+                    </tr>
+                    <tr>
+                    <tr class="non_border_all"  style="display: <?php echo $display_non_debt;?>">
+                        <td class="ordernum" colspan="8">на <?php echo $date = date("d.m.Y", strtotime($to_date)); ?> задолженность отсутствует. </td>
+                    </tr>
+                    <tr class="non_border_all" style="display: <?php echo $display_debt_1;?>">
+                        <td class="ordernum" colspan="8">на <?php echo $date = date("d.m.Y", strtotime($to_date)); ?> задолженность в ползу ООО "ORTOPHARM" 
+                        <?php echo number_format($sum_last_debt, 0, ',', ' '); ?> (<?php echo str_price($sum_last_debt)?>) сум.
+                    </td>
+                    </tr>
+                    <tr class="non_border_all" style="display: <?php echo $display_debt_2;?>">
+                        <td class="ordernum" colspan="8">на <?php echo $date = date("d.m.Y", strtotime($to_date)); ?> задолженность в ползу <?php echo $contractor["name"];?>
+                        <?php echo number_format($sum_last_prepayment, 0, ',', ' '); ?> (<?php echo str_price($sum_last_prepayment)?>) сум.
+                    </td>
+                    </tr>
+                    <tr class="non_border_all">
+                        <td colspan="8"> </td>
+                    </tr>
+                    <tr class="non_border_all">
+                        <td class="non_border_all"  colspan="4">от ООО "ORTOPHARM"</td>
+                        <td colspan="4">От <?php echo $contractor["name"];?></td>
+                    </tr>
+                    <tr class="non_border_all">
+                        <td colspan="8"> </td>
+                    </tr>
+                    <tr class="non_border_all">
+                        <td class="non_border_all" colspan="4">Директор</td>
+                        <td colspan="4">Директор</td>
+                    </tr>
+                    <tr class="non_border_all">
+                        <td colspan="8"> </td>
+                    </tr>
+                    <tr class="non_border_all">
+                        <td class="non_border_all" colspan="4">________________________________________________________</td>
+                        <td colspan="4">________________________________________________________</td>
+                    </tr>
+                    <tr class="non_border_all">
+                        <td colspan="8"> </td>
+                    </tr>
+                    <tr class="non_border_all">
+                        <td class="non_border_all" colspan="4">М.П.</td>
+                        <td colspan="4">М.П.</td>
+                    </tr>
+                    <tr class="non_border_all">
+                        <td colspan="8"> </td>
+                    </tr>
+                    <tr class="non_border_all">
+                        <td colspan="8"> </td>
+                    </tr>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+
+<div class="container-fluid">
+
+    <?php include 'partSite/modal.php'; ?>
+    
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js"></script>
+<script>
+$('.normalize').selectize();
+
+function exportTableToExcel(tableID, filename = ''){
+    var downloadLink;
+    var dataType = 'application/vnd.ms-excel';
+    var tableSelect = document.getElementById(tableID);
+    var tableHTML = tableSelect.outerHTML.replace(/ /g, '%20');
+    
+    // Specify file name
+    filename = filename?filename+'.xls':'excel_data.xls';
+    
+    // Create download link element
+    downloadLink = document.createElement("a");
+    
+    document.body.appendChild(downloadLink);
+    
+    if(navigator.msSaveOrOpenBlob){
+        var blob = new Blob(['\ufeff', tableHTML], {
+            type: dataType
+        });
+        navigator.msSaveOrOpenBlob( blob, filename);
+    }else{
+        // Create a link to the file
+        downloadLink.href = 'data:' + dataType + ', ' + tableHTML;
+    
+        // Setting the file name
+        downloadLink.download = filename;
+        
+        //triggering the function
+        downloadLink.click();
+    }
+}
+
+
+</script>
+</body>
+</html>
