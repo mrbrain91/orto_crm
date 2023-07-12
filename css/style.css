@@ -610,3 +610,12 @@ input[type="radio"]:checked + label {
 .invoice__bottom_item {
   width: 48%;
 }
+
+
+/* CSS styles for the container element */
+#snipping-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}

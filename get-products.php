@@ -1,6 +1,6 @@
 <?php
 // Connect to the database
-$conn = new mysqli('localhost', 'pharmat1_orto', 'pharmat1_orto', 'pharmat1_orto');
+$conn = new mysqli('localhost', 'root', 'root', 'orto_db');
 
 // Check connection
 if ($conn->connect_error) {

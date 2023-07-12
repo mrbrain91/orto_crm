@@ -44,3 +44,20 @@ function calculateGrandTotal() {
     $("#grandtotal").text(grandTotal.toFixed(2));
 }
 
+
+
+// snipping.js
+
+// Event listener for page load event
+window.addEventListener('load', function() {
+    // Get the container element
+    var container = document.getElementById('snipping-container');
+  
+    // Set the HTML of the container to the snipping GIF image
+    container.innerHTML = '<img src="../images/loader.gif" alt="Loading GIF">';
+  
+    // After a delay, remove the snipping GIF
+    setTimeout(function() {
+      container.innerHTML = '';
+    }, 500); // Adjust the delay (in milliseconds) as needed
+  });

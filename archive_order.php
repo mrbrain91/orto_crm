@@ -46,7 +46,7 @@ if (isset($_POST['id_contractor']) AND isset($_POST['from_date']) AND isset($_PO
  }
  else {
      //list all
-     $query = "SELECT * FROM main_ord_tbl WHERE order_status='4' ORDER BY id desc LIMIT 0,".$limit;
+     $query = "SELECT * FROM main_ord_tbl WHERE order_status='4' ORDER BY ord_deliver_date desc LIMIT 0,".$limit;
      $all_debt_query = "SELECT sum(transaction_amount) as all_debt, count(id) as allcount FROM main_ord_tbl WHERE order_status='4'";
      
      $display_true = 'true';
@@ -103,7 +103,9 @@ if(mysqli_num_rows($rs_result) == 0) {
     <title>ortosavdo</title>
     
 </head>
-<body>  
+<body> 
+<!-- Container element to hold the snipping GIF -->
+<div id="snipping-container"></div> 
 
 <?php include 'partSite/nav.php'; ?>
 
@@ -355,6 +357,6 @@ $(document).ready(function () {
   });
 
 </script>
-
+<script src="js/snipping.js"></script>
 </body>
 </html>

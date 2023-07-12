@@ -87,7 +87,9 @@ if (isset($_POST['id_tci'])) {
     <title>ortosavdo</title>
     
 </head>
-<body>  
+<body> 
+<!-- Container element to hold the snipping GIF -->
+<div id="snipping-container"></div>
 
 <?php include 'partSite/nav.php'; ?>
 
@@ -291,5 +293,6 @@ $(document).ready(function () {
 
 </script>
 
+<script src="js/snipping.js"></script>
 </body>
 </html>

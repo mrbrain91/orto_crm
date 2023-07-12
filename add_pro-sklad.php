@@ -102,7 +102,10 @@ $product_list = mysqli_query ($connect, $sql);
     <link rel="stylesheet" href="css/style.css">
     <title>ortosavdo</title>
 </head>
-<body>
+<body> 
+<!-- Container element to hold the snipping GIF -->
+<div id="snipping-container"></div>
+
     
 <?php include 'partSite/nav-sklad.php'; ?>
 
@@ -238,6 +241,7 @@ $product_list = mysqli_query ($connect, $sql);
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js"></script>
+<script src="js/snipping.js"></script>
 </body>
 
 

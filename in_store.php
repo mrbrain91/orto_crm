@@ -11,9 +11,8 @@ if (!isset($_SESSION['usersname'])) {
 
 
 //---get counterparties
-$sql = "SELECT * FROM counterparties_tbl";
-$counterparties_tbl = mysqli_query ($connect, $sql);
-
+$sql = "SELECT * FROM supplier_tbl";
+$supplier_tbl = mysqli_query ($connect, $sql);
 
 // for count
 $count_query = "SELECT count(*) as allcount FROM order_tbl ORDER BY id DESC";
@@ -35,14 +34,14 @@ if (isset($_POST['id_contractor']) AND isset($_POST['from_date']) AND isset($_PO
     $display_sts_filer_on = 'true';
     
     
-     $query = "SELECT * FROM main_ord_tbl WHERE contractor = '$id_cont' AND order_status='0' AND ord_date >= '$fr_date' AND ord_date <= '$to_date' ORDER BY id DESC";
+     $query = "SELECT * FROM order_tbl WHERE supplier_id = '$id_cont' AND date_order >= '$fr_date' AND date_order <= '$to_date' ORDER BY id DESC";
  
-     $all_debt_query = "SELECT sum(transaction_amount) as all_debt, count(id) as allcount FROM main_ord_tbl WHERE contractor = '$id_cont' AND order_status='0' AND ord_date >= '$fr_date' AND ord_date <= '$to_date' ORDER BY id DESC";
+     $all_debt_query = "SELECT sum(sum_order) as all_debt, count(id) as allcount FROM order_tbl WHERE supplier_id = '$id_cont' AND date_order >= '$fr_date' AND date_order <= '$to_date' AND status_order = 1 ORDER BY id DESC";
 }
  else {
      //list all
      $query = "SELECT * FROM order_tbl ORDER BY id desc LIMIT 0,".$limit;
-     $all_debt_query = "SELECT sum(sum_order) as all_debt, count(id) as allcount FROM order_tbl";
+     $all_debt_query = "SELECT sum(sum_order) as all_debt, count(id) as allcount FROM order_tbl WHERE status_order = 1";
      
      $display_true = 'true';
      $display_none = 'none';
@@ -86,7 +85,9 @@ $rs_result = mysqli_query ($connect, $query);
     <title>ortosavdo</title>
     
 </head>
-<body>  
+<body> 
+<!-- Container element to hold the snipping GIF -->
+<div id="snipping-container"></div>
 
 <?php include 'partSite/nav.php'; ?>
 
@@ -135,7 +136,7 @@ $rs_result = mysqli_query ($connect, $query);
         <table class="table table-hover" style="border-collapse:collapse;">
         <thead>
             <tr>
-                <th scope="col">Номер прихода</th>
+                <th style="width:10%;" scope="col">Номер прихода</th>
                 <th scope="col">Доставщик</th>
                 <th scope="col">Сумма</th>
                 <th scope="col">Дата прихода</th>
@@ -170,7 +171,7 @@ $rs_result = mysqli_query ($connect, $query);
             <td><?php $supplier = get_supplier($connect, $row["supplier_id"]);?>&nbsp;<?php echo $supplier["name"];?></td>
             <td><?php echo number_format(floatval($row['sum_order']), 0, '.', ' '); ?></td>
             <td><?php echo $date = date("d.m.Y", strtotime($row["date_order"])); ?></td>
-            <td><span style="border: 1px solid; background-color: <?php echo $color;?>; padding: 5px 10px; border-radius: 4px; color: white;"><?php echo $status_order; ?></span></td>
+            <td><span style="display:flex; justify-content:center; width:50%; border: 1px solid; background-color: <?php echo $color;?>; padding: 5px 10px; border-radius: 4px; color: white;"><?php echo $status_order; ?></span></td>
         </tr>
         <tr>
             <td colspan="12" style="border:0px;  background-color: #fafafb;" class="hiddenRow">
@@ -180,7 +181,7 @@ $rs_result = mysqli_query ($connect, $query);
                     <a style="display:<?php if($row["status_order"] == 0){echo 'true';}else {echo 'none';}?>;" href="action.php?store_id=<?=$row['id']?>&&supplier_id=<?=$row['supplier_id']?>&&credit=<?=$row['sum_order']?>&&ord_date=<?=$row['date_order']?>&&payment_type=<?=$row['payment_type']?>"><button onclick="return confirm('Принят?')" class="btn btn-custom">Принят</button> </a>
                     <a style="display:<?php if($row["status_order"] == 1){echo 'true';}else {echo 'none';}?>;" href="action.php?draft_store_id=<?=$row['id']?>&&supplier_id=<?=$row['supplier_id']?>&&credit=<?=$row['sum_order']?>&&ord_date=<?=$row['date_order']?>&&payment_type=<?=$row['payment_type']?>"><button onclick="return confirm('Черновик?')" class="btn btn-custom">Черновик</button> </a>
                     <a style="display:<?php if($row["status_order"] == 0){echo 'true';}else {echo 'none';}?>;" href="action.php?cencel_id_store=<?=$row['id']?>"><button onclick="return confirm('Отменить?')" class="btn btn-custom">Отменить</button> </a>
-                    <a style="display:<?php if($row["status_order"] == 0 OR $row["status_order"] == 1){echo 'true';}else {echo 'none';}?>;" href="#" class="btn btn-custom">Счет-фактура</button> </a>
+                    <!-- <a style="display:<?php if($row["status_order"] == 0 OR $row["status_order"] == 1){echo 'true';}else {echo 'none';}?>;" href="#" class="btn btn-custom">Счет-фактура</button> </a> -->
                 </div> 
             </td>
         </tr>
@@ -238,9 +239,9 @@ $rs_result = mysqli_query ($connect, $query);
                     <select required class="normalize" name="id_contractor" form="filer_form">
                         <option value="">выберите</option>
                         <?php    
-                            while ($option_contractor = mysqli_fetch_array($counterparties_tbl)) {    
+                            while ($option_supplier = mysqli_fetch_array($supplier_tbl)) {    
                         ?>
-                            <option value="<?php echo $option_contractor["id"];?>"><?php echo $option_contractor["name"]?></option>
+                            <option value="<?php echo $option_supplier["id"];?>"><?php echo $option_supplier["name"]?></option>
                         <?php
                             };    
                         ?>
@@ -264,6 +265,7 @@ $rs_result = mysqli_query ($connect, $query);
     </div>
   </div>
 </div>  
+
 <!-- END MODAL -->
 
 
@@ -320,5 +322,6 @@ $(document).ready(function () {
 
 </script>
 
+<script src="js/snipping.js"></script>
 </body>
 </html>

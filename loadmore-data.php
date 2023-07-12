@@ -30,7 +30,7 @@ if (isset($_POST['rowpredo'])) {
   $start = $_POST['rowpredo'];
   $i = $start;
   $limit = 15;
-  $query = "SELECT * FROM debts WHERE main_prepayment != '0' AND sts='2' ORDER BY id desc LIMIT ".$start.",".$limit;
+  $query = "SELECT * FROM debts WHERE main_prepayment != '0' AND sts='2' ORDER BY order_date desc LIMIT ".$start.",".$limit;
   $result = mysqli_query($connect,$query);
 
   if ($result->num_rows > 0) {
@@ -47,21 +47,20 @@ if (isset($_POST['rowpredo'])) {
       }
       ?>
         <tr data-toggle="collapse" data-target="#row<?php echo $i;?>" aria-expanded="true" class="accordion-toggle">
-          <td><?php echo $row['id']; ?></td>
-          <td><?php $user = get_contractor($connect, $row["id_counterpartie"]); echo $user["name"];?></td>
-          <td><?php echo $date = date("d.m.Y", strtotime($row["order_date"])); ?></td>
-
-          <td><?php echo $row['payment_type']; ?></td>
-          <td><?php echo number_format($row['main_prepayment'], 0, ',', ' '); ?></td>
-          <td style="color: <?php echo $sts_color; ?>"><?php echo $sts; ?></td>
-
-          </tr>
-          <tr>
-          <td colspan="12" style="border:0px; background-color: #fafafb;" class="hiddenRow"><div class="accordian-body collapse" id="row<?php echo $i;?>"> 
-              <a href="prepayment_view.php?id=<?php echo $row["id"]; ?>"><button class="btn btn-custom">Просмотр</button> </a>
-              <a href="prepayment_edit.php?id=<?php echo $row["id"]; ?>"><button style="display: <?php echo $sts_display; ?>" class="btn btn-custom">Редактировать</button> </a>
-              <a href="action.php?change_del_prepayment_id=<?=$row['id']?>"><button style="display: <?php echo $sts_display; ?>" class="btn btn-custom" onclick="return confirm('Отменить?')">Отменить</button> </a>
-          </td>   
+                <td><?php echo $row['id']; ?></td>
+                <td><?php $user = get_contractor($connect, $row["id_counterpartie"]); echo $user["name"];?></td>
+                <td><?php $user = get_user($connect, $row["sale_agent"]);?>&nbsp;<?php echo $user["surname"]; ?>&nbsp;<?php echo $user["name"]; ?>&nbsp;<?php echo $user["fathername"]; ?></td>
+                <td><?php echo $date = date("d.m.Y", strtotime($row["order_date"])); ?></td>
+                <td><?php echo $row['payment_type']; ?></td>
+                <td><?php echo number_format($row['main_prepayment'], 0, ',', ' '); ?></td>
+                <td style="color: <?php echo $sts_color; ?>"><?php echo $sts; ?></td>
+            </tr>
+            <tr>
+                <td colspan="12" style="border:0px; background-color: #fafafb;" class="hiddenRow"><div class="accordian-body collapse" id="row<?php echo $i;?>"> 
+                    <a href="prepayment_view.php?id=<?php echo $row["id"]; ?>"><button class="btn btn-custom">Просмотр</button> </a>
+                    <a href="prepayment_edit.php?id=<?php echo $row["id"]; ?>"><button style="display: <?php echo $sts_display; ?>" class="btn btn-custom">Редактировать</button> </a>
+                    <a href="action.php?change_del_prepayment_id=<?=$row['id']?>"><button style="display: <?php echo $sts_display; ?>" class="btn btn-custom" onclick="return confirm('Отменить?')">Отменить</button> </a>
+                </td>   
         </tr>
     <?php 
     }
@@ -334,7 +333,7 @@ if (isset($_POST['rowarchive'])) {
   $start = $_POST['rowarchive'];
   $i = $start;
   $limit = 15;
-  $query = "SELECT * FROM main_ord_tbl WHERE order_status='4' ORDER BY id desc LIMIT ".$start.",".$limit;
+  $query = "SELECT * FROM main_ord_tbl WHERE order_status='4' ORDER BY ord_deliver_date desc LIMIT ".$start.",".$limit;
 
   $result = mysqli_query($connect,$query);
 
@@ -397,7 +396,7 @@ if (isset($_POST['rowcounterpartie'])) {
   $start = $_POST['rowcounterpartie'];
   $i = $start;
   $limit = 15;
-  $query = "SELECT * FROM counterparties_tbl ORDER BY id desc LIMIT ".$start.",".$limit;
+  $query = "SELECT * FROM counterparties_tbl ORDER BY name asc LIMIT ".$start.",".$limit;
 
   $result = mysqli_query($connect,$query);
 

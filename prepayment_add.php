@@ -11,15 +11,23 @@ $last_id = get_id_new_order($connect);
 
 
 if(isset($_POST['submit']) && $_POST['submit'] == 'Сохранить') {
-
+    
+        $id_sale_agent = $_POST['id_sale_agent'];
         $id_counterpartie = $_POST['id_counterpartie'];
         $prepayment_date = $_POST['prepayment_date'];
         $prepayment_sum = str_replace(' ', '', $_POST['prepayment_sum']);
         $payment_type = $_POST['payment_type'];
         $sts = 2;
-        add_main_prepayment($connect, $id_counterpartie, $prepayment_date, $prepayment_sum, $payment_type, $sts);
+        add_main_prepayment($connect, $id_sale_agent, $id_counterpartie, $prepayment_date, $prepayment_sum, $payment_type, $sts);
 
 }
+
+
+//get  users
+$sql = "SELECT * FROM users_tbl WHERE role='sale'";
+$users_tbl = mysqli_query ($connect, $sql);
+//end get users 
+
 
 //get counterparties
 $sql = "SELECT * FROM counterparties_tbl";
@@ -44,7 +52,9 @@ $counterparties_tbl = mysqli_query ($connect, $sql);
     <link rel="stylesheet" href="css/style.css">
     <title>ortosavdo</title>
 </head>
-<body>
+<body> 
+<!-- Container element to hold the snipping GIF -->
+<div id="snipping-container"></div>
     
 <?php include 'partSite/nav.php'; ?>
 
@@ -80,11 +90,25 @@ $counterparties_tbl = mysqli_query ($connect, $sql);
                 <div class="col-md-3">
                         <span>Дата</span>
                 </div>
+                <div class="col-md-3">
+                        <span>Торговый представитель</span>
+                </div>
             </div>
             <div class="row">
-               
-            <div class="col-md-3">
-                    <input required type="date" value="<?php echo date("Y-m-d"); ?>" class="form-control" name="prepayment_date">
+                <div class="col-md-3">
+                        <input required type="date" value="<?php echo date("Y-m-d"); ?>" class="form-control" name="prepayment_date">
+                </div>
+                <div class="col-md-3">
+                    <select required name="id_sale_agent" class="normalize">
+                        <option value="">--выберитe---</option>
+                        <?php    
+                            while ($option = mysqli_fetch_array($users_tbl)) {    
+                        ?>
+                            <option value="<?php echo $option["id"];?>"><?php echo $option["surname"]?> <?php echo $option["name"];?> <?php echo $option["fathername"];?></option>
+                        <?php       
+                            };    
+                        ?>
+                    </select>
                 </div>
             </div>
             <div class="row mt">
@@ -153,6 +177,7 @@ $counterparties_tbl = mysqli_query ($connect, $sql);
 <script src="https://cdnjs.cloudflare.com/ajax/libs/autonumeric/4.6.0/autoNumeric.js" integrity="sha512-/lbeISSLChIunUcgNvSFJSC+LFCZg08JHFhvDfDWDlY3a/NYb/NPKOcfDte3aA6E3mxm9a3sdxvkktZJSCpxGw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 
+<script src="js/snipping.js"></script>
 </body>
 </html>
 

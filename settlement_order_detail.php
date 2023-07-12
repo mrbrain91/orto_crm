@@ -46,7 +46,9 @@ $rs_result = mysqli_query ($connect, $query);
     <link rel="stylesheet" href="css/style.css">
     <title>ortosavdo</title>
 </head>
-<body>  
+<body> 
+<!-- Container element to hold the snipping GIF -->
+<div id="snipping-container"></div>
 
 <?php include 'partSite/nav.php'; ?>
 
@@ -125,5 +127,6 @@ $rs_result = mysqli_query ($connect, $query);
     <?php include 'partSite/modal.php'; ?>
     
 </div>
+<script src="js/snipping.js"></script>
 </body>
 </html>

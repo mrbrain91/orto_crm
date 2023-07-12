@@ -46,7 +46,9 @@ $state_tbl = mysqli_query ($connect, $sql);
     <link rel="stylesheet" href="css/style.css">
     <title>ortosavdo</title>
 </head>
-<body>
+<body> 
+<!-- Container element to hold the snipping GIF -->
+<div id="snipping-container"></div>
     
 <?php include 'partSite/nav.php'; ?>
 
@@ -145,6 +147,7 @@ $state_tbl = mysqli_query ($connect, $sql);
 <script src="https://cdnjs.cloudflare.com/ajax/libs/autonumeric/4.6.0/autoNumeric.js" integrity="sha512-/lbeISSLChIunUcgNvSFJSC+LFCZg08JHFhvDfDWDlY3a/NYb/NPKOcfDte3aA6E3mxm9a3sdxvkktZJSCpxGw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 
+<script src="js/snipping.js"></script>
 </body>
 </html>
 

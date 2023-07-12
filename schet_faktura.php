@@ -52,7 +52,10 @@ $rs_result = mysqli_query ($connect, $query);
     <title>ortosavdo</title>
     
 </head>
-<body>  
+<body> 
+<!-- Container element to hold the snipping GIF -->
+<div id="snipping-container"></div>
+
 
 <?php include 'partSite/nav.php'; ?>
 
@@ -79,7 +82,7 @@ $rs_result = mysqli_query ($connect, $query);
     <span class="invoice__title"> к договору № OP2023-4 от 16.01.2023 </span>
     <!-- start card head information -->
     <div class="container-fluid">
-        <div class="card_head">
+        <div class="card_head" style="display: flex;">
             <div class="card_head__wrapper">
                 <div class="row">
                     <div class="col-sm-4">
@@ -303,5 +306,6 @@ $rs_result = mysqli_query ($connect, $query);
 </div>
 
 
+<script src="js/snipping.js"></script>
 </body>
 </html>

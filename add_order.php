@@ -17,7 +17,7 @@ $users_tbl = mysqli_query ($connect, $sql);
 
 
 //get counterparties
-$sql = "SELECT * FROM counterparties_tbl";
+$sql = "SELECT * FROM counterparties_tbl ORDER BY name ASC";
 $counterparties_tbl = mysqli_query ($connect, $sql);
 //end get counterparties 
 
@@ -41,7 +41,7 @@ if(isset($_POST['submit']) && $_POST['submit'] == 'Принять') {
         $display_toggle = 'block';
     }else {
 
-
+        // Call the function to add each order
         add_each_ord($connect);
 
         $main_order_contractor = $_POST['main_order_contractor'];
@@ -51,6 +51,8 @@ if(isset($_POST['submit']) && $_POST['submit'] == 'Принять') {
         $main_order_paymen_type = $_POST['main_order_paymen_type'];
         $total_name = get_sum_main_ord($connect);
 
+
+        // Call the function to add the main order
         add_main_ord($connect, $main_order_contractor, $main_order_sale_agent, $main_order_date, $main_order_deliver_date, $main_order_paymen_type, $total_name);
        
     }
@@ -83,9 +85,10 @@ if(isset($_POST['submit']) && $_POST['submit'] == 'Принять') {
     <title>ortosavdo</title>
     
 </head>
-<body>  
-
-<?php include 'partSite/nav.php'; ?>
+<body> 
+<!-- Container element to hold the snipping GIF -->
+<div id="snipping-container"></div> 
+<?php include 'partSite/nav.php'; ?> 
 
 
 <div class="page_name">
@@ -131,7 +134,9 @@ if(isset($_POST['submit']) && $_POST['submit'] == 'Принять') {
             </div>
             <div class="row">
                 <div class="col-md-3">
-                    <input type="date" value="<?php echo date("Y-m-d"); ?>"  class="form-control" name="main_order_date" form="order_form">
+                    <!-- <input type="date" value="<?php echo date("Y-m-d"); ?>"  class="form-control" name="main_order_date" form="order_form"> -->
+                    <input type="date" value="<?php echo date("Y-m-d"); ?>" class="form-control" name="main_order_date" form="order_form" id="main_order_date_input">
+
                 </div>
                 <div class="col-md-3">
                     <input type="date" value="<?php echo date("Y-m-d"); ?>"  class="form-control" name="main_order_deliver_date" form="order_form">
@@ -200,14 +205,14 @@ if(isset($_POST['submit']) && $_POST['submit'] == 'Принять') {
                     <td>Количество</td>
                     <!-- <td>Срок годности</td> -->
                     <td>Базовая цена</td>
-                    <td>
+                    <td style="width:9%;">
                         Скидка:  
-                        
-                        <input form="order_form" type="radio" id="ChoiseSum" name="saletype" value="ChoiseSum" checked />
-                        <label for="ChoiseSum">$</label>
 
-                        <input form="order_form"  type="radio" id="ChoicePercent" name="saletype" value="ChoicePercent" />
+                        <input form="order_form"  type="radio" id="ChoicePercent" name="saletype" value="ChoicePercent" checked />
                         <label for="ChoicePercent">%</label>
+                        
+                        <input form="order_form" type="radio" id="ChoiseSum" name="saletype" value="ChoiseSum"  />
+                        <label for="ChoiseSum">$</label>
 
                     </td>
                     <td>Переоценка</td>
@@ -298,13 +303,17 @@ if(isset($_POST['submit']) && $_POST['submit'] == 'Принять') {
 
 <!--bootstrap-select js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
-
-
-
+<script src="js/snipping.js"></script>
 </body>
 
 <script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.getElementById('main_order_date_input').focus();
+});
+</script>
 
+
+<script>
 
 $('.normalize').selectize();
 
@@ -427,12 +436,12 @@ $(document).ready(function() {
             var qty = $('#quantity_'+ind).val();
             var sale = $('#sale_'+ind).val();
             var price = $('#product_price_'+ind).val();
-            var totNumber = (price - (-sale))*qty;
-            var tot = totNumber;
-            var afterSale = price - (-sale);
+
+            var totNumber = (qty * price)+(qty * price*sale)/100;
+            var afterSale = price - ((-price*sale)/100);
             $('#after_sale_'+ind).val(afterSale);
-            $('#sale_type_'+ind).val('sum');
-            $('#total_cost_'+ind).val(tot);
+            $('#sale_type_'+ind).val('percent');
+            $('#total_cost_'+ind).val(totNumber);
             calculateSubTotal();
         }
 

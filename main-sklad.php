@@ -28,12 +28,15 @@ if (!isset($_SESSION['usersname'])) {
     <title>ortosavdo</title>
     
 </head>
-<body>  
+<body> 
+<!-- Container element to hold the snipping GIF -->
+<div id="snipping-container"></div>
 
 <?php include 'partSite/nav-sklad.php'; ?>
 <div class="container">
     <?php include 'partSite/modal.php'; ?>
 </div>
 
+<script src="js/snipping.js"></script>
 </body>
 </html>

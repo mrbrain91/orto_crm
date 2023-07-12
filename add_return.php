@@ -89,7 +89,9 @@ if(isset($_POST['submit']) && $_POST['submit'] == 'Принять') {
     <title>ortosavdo</title>
     
 </head>
-<body>  
+<body> 
+<!-- Container element to hold the snipping GIF -->
+<div id="snipping-container"></div>
 
 <?php include 'partSite/nav.php'; ?>
 
@@ -275,7 +277,7 @@ if(isset($_POST['submit']) && $_POST['submit'] == 'Принять') {
 <!--bootstrap-select js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.10.0/js/bootstrap-select.min.js"></script>
 
-
+<script src="js/snipping.js"></script>
 </body>
 
 <script>

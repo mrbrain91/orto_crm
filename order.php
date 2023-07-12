@@ -101,6 +101,8 @@ if(mysqli_num_rows($rs_result) == 0) {
     
 </head>
 <body>  
+<!-- Container element to hold the snipping GIF -->
+<div id="snipping-container"></div> 
 
 <?php include 'partSite/nav.php'; ?>
 
@@ -116,7 +118,7 @@ if(mysqli_num_rows($rs_result) == 0) {
         <div class="container-fluid">
             <div class="toolbar_wrapper">
                 <div>
-                    <a href="add_order.php"> <button type="button" class="btn btn-success">Добавить</button> </a>
+                    <a href="add_order.php"><button type="button" class="btn btn-success">Добавить</button></a>
                 </div>
                 <?php
                                         // Add the following code wherever you want to display the notification1
@@ -306,6 +308,8 @@ if(mysqli_num_rows($rs_result) == 0) {
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js"></script>
+<script src="js/snipping.js"></script>
+
 
 
 

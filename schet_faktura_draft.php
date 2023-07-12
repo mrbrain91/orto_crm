@@ -70,7 +70,9 @@ p {
 
 </style>
 </head>
-<body>
+<body> 
+<!-- Container element to hold the snipping GIF -->
+<div id="snipping-container"></div>
 <button class="close-button" onclick="window.close()">Закрыть</button>
 
   <div class="invoice">
@@ -114,5 +116,6 @@ p {
       <p><strong>Total:</strong> $35.00</p>
     </div>
   </div>
+  <script src="js/snipping.js"></script>
 </body>
 </html>

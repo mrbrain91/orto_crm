@@ -122,13 +122,13 @@ function get_returned_item_count($connect){
 
 //get_ortder_item count for rest 
 function get_order_item_count($connect){
-	$query = "SELECT prod_name, SUM(count_name) AS order_count FROM main_ord__item_tbl WHERE order_itm_sts='1' GROUP BY prod_name ORDER BY order_count DESC";
+	$query = "SELECT prod_name, SUM(count_name) AS order_count FROM main_ord__item_tbl WHERE order_itm_sts IN ('1', '4') GROUP BY prod_name ORDER BY order_count DESC";
 	$rs_result = mysqli_query ($connect, $query);
 	return $rs_result;
 }
 
 // clear count rest table column
-function clear_count_rest($connect, $column_name) {
+function clear_count_new_rest($connect, $column_name) {
 	$sql1 = "SELECT prod_id FROM rest_tbl";
 	$res1 = mysqli_query($connect, $sql1);
 	while($row1 = mysqli_fetch_array($res1)) {
@@ -137,6 +137,38 @@ function clear_count_rest($connect, $column_name) {
 		mysqli_query($connect, $sql);
 	}
 }
+
+function clear_count_delivered_archive_rest($connect, $column_name) {
+	$sql1 = "SELECT prod_id FROM rest_tbl";
+	$res1 = mysqli_query($connect, $sql1);
+	while($row1 = mysqli_fetch_array($res1)) {
+		$prod_id = $row1['prod_id'];
+		$sql = "UPDATE rest_tbl SET $column_name = '0' WHERE prod_id='$prod_id'";
+		mysqli_query($connect, $sql);
+	}
+}
+
+function clear_count_store_rest($connect, $column_name) {
+	$sql1 = "SELECT prod_id FROM rest_tbl";
+	$res1 = mysqli_query($connect, $sql1);
+	while($row1 = mysqli_fetch_array($res1)) {
+		$prod_id = $row1['prod_id'];
+		$sql = "UPDATE rest_tbl SET $column_name = '0' WHERE prod_id='$prod_id'";
+		mysqli_query($connect, $sql);
+	}
+}
+
+
+function clear_count_return_rest($connect, $column_name) {
+	$sql1 = "SELECT prod_id FROM rest_tbl";
+	$res1 = mysqli_query($connect, $sql1);
+	while($row1 = mysqli_fetch_array($res1)) {
+		$prod_id = $row1['prod_id'];
+		$sql = "UPDATE rest_tbl SET $column_name = '0' WHERE prod_id='$prod_id'";
+		mysqli_query($connect, $sql);
+	}
+}
+
 
 //get_ortder_item count for rest new bron order
 function get_new_order_item_count($connect){
@@ -846,9 +878,9 @@ function cash_out_add($connect, $state_id,  $cash_sum, $cash_type, $cash_comment
 
 }
 
-function add_main_prepayment($connect, $id_counterpartie, $prepayment_date, $prepayment_sum, $payment_type, $sts){
+function add_main_prepayment($connect, $id_sale_agent, $id_counterpartie, $prepayment_date, $prepayment_sum, $payment_type, $sts){
 
-	$sql = "INSERT INTO `debts` (`id_counterpartie`, `order_date`, `main_prepayment`, `payment_type`, `sts`) VALUES ('".$id_counterpartie."','".$prepayment_date."','".$prepayment_sum."','".$payment_type."','".$sts."');";
+	$sql = "INSERT INTO `debts` (`sale_agent`, `id_counterpartie`, `order_date`, `main_prepayment`, `payment_type`, `sts`) VALUES ('".$id_sale_agent."','".$id_counterpartie."','".$prepayment_date."','".$prepayment_sum."','".$payment_type."','".$sts."');";
 	
 	if (mysqli_query($connect, $sql)) {
 		redirect("prepayment_list.php");

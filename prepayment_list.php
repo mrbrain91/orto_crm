@@ -8,9 +8,10 @@ if (!isset($_SESSION['usersname'])) {
 
 
 
-// $query = "SELECT * FROM debts WHERE main_prepayment!='0' AND sts='2' ORDER BY id DESC";
-// $rs_result = mysqli_query ($connect, $query);   
-
+//get  users
+$sql = "SELECT * FROM users_tbl WHERE role='sale'";
+$users_tbl = mysqli_query ($connect, $sql);
+//end get users 
 
 
 
@@ -30,26 +31,30 @@ $display_sts_filer_on = 'none';
 
 
 // filter form 
-if (isset($_POST['id_contractor']) AND isset($_POST['from_date']) AND isset($_POST['to_date'])) {
+if (isset($_POST['id_contractor']) AND isset($_POST['id_sale_agent']) AND isset($_POST['from_date']) AND isset($_POST['to_date'])) {
    $id_cont = $_POST['id_contractor'];
+   $id_user = $_POST['id_sale_agent'];
    $fr_date = $_POST['from_date'];
    $to_date = $_POST['to_date'];
 
    $bg_sts = '#ebf0ff';
    $display_sts = 'none';
    $display_sts_filer_on = 'true';
-   
-   
-    $query = "SELECT * FROM debts WHERE id_counterpartie = '$id_cont' AND main_prepayment!='0' AND sts='2' AND order_date >= '$fr_date' AND order_date <= '$to_date' ORDER BY id DESC";
 
+
+   if ($id_user == '-' AND $id_cont !== '-') {
+    $query = "SELECT * FROM debts WHERE id_counterpartie = '$id_cont' AND main_prepayment!='0' AND sts='2' AND order_date >= '$fr_date' AND order_date <= '$to_date' ORDER BY id DESC";
     $all_debt_query = "SELECT sum(main_prepayment) as all_debt, count(id) as allcount FROM debts WHERE id_counterpartie = '$id_cont' AND main_prepayment!='0' AND sts='2' AND order_date >= '$fr_date' AND order_date <= '$to_date' ORDER BY id DESC";
-   
+   }elseif ($id_cont == '-' AND $id_user !== '-') {
+    $query = "SELECT * FROM debts WHERE sale_agent = '$id_user' AND main_prepayment!='0' AND sts='2' AND order_date >= '$fr_date' AND order_date <= '$to_date' ORDER BY id DESC";
+    $all_debt_query = "SELECT sum(main_prepayment) as all_debt, count(id) as allcount FROM debts WHERE sale_agent = '$id_user' AND main_prepayment!='0' AND sts='2' AND order_date >= '$fr_date' AND order_date <= '$to_date' ORDER BY id DESC";
+   }
  
 
 }
 else {
     //list all
-    $query = "SELECT * FROM debts WHERE main_prepayment!='0' AND sts='2' ORDER BY id desc LIMIT 0,".$limit;
+    $query = "SELECT * FROM debts WHERE main_prepayment!='0' AND sts='2' ORDER BY order_date desc LIMIT 0,".$limit;
     $all_debt_query = "SELECT sum(main_prepayment) as all_debt, count(id) as allcount FROM debts WHERE main_prepayment!='0' AND sts='2'";
     
     $display_true = 'true';
@@ -99,7 +104,9 @@ $rs_result = mysqli_query ($connect, $query);
     <link rel="stylesheet" href="css/style.css">
     <title>ortosavdo</title>
 </head>
-<body>   
+<body> 
+<!-- Container element to hold the snipping GIF -->
+<div id="snipping-container"></div>
 
 <?php include 'partSite/nav.php'; ?>
 
@@ -151,6 +158,7 @@ $rs_result = mysqli_query ($connect, $query);
             <tr>
                 <th scope="col">Ид</th>
                 <th scope="col">Контрагент</th>
+                <th scope="col">Торговый представитель</th>
                 <th scope="col">Дата оплата</th>
                 <th scope="col">Тип оплаты</th>
                 <th scope="col">Сумма оплата</th>
@@ -176,6 +184,7 @@ $rs_result = mysqli_query ($connect, $query);
             <tr data-toggle="collapse" data-target="#row<?php echo $i;?>" aria-expanded="true" class="accordion-toggle">
                 <td><?php echo $row['id']; ?></td>
                 <td><?php $user = get_contractor($connect, $row["id_counterpartie"]); echo $user["name"];?></td>
+                <td><?php $user = get_user($connect, $row["sale_agent"]);?>&nbsp;<?php echo $user["surname"]; ?>&nbsp;<?php echo $user["name"]; ?>&nbsp;<?php echo $user["fathername"]; ?></td>
                 <td><?php echo $date = date("d.m.Y", strtotime($row["order_date"])); ?></td>
                 <td><?php echo $row['payment_type']; ?></td>
                 <td><?php echo number_format($row['main_prepayment'], 0, ',', ' '); ?></td>
@@ -225,8 +234,11 @@ $rs_result = mysqli_query ($connect, $query);
         </form>
       <form action="#" method="POST" class="horizntal-form" id="filer_form">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-3">
                     <span>Контрагент</span>
+                </div>
+                <div class="col-md-3">
+                    <span>Торговый представитель</span>
                 </div>
                 <div class="col-md-3">
                         <span>Дата начала</span>
@@ -236,14 +248,26 @@ $rs_result = mysqli_query ($connect, $query);
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-6"> 
-                    <select required class="normalize" name="id_contractor" form="filer_form">
-                        <option value="">выберите</option>
+                <div class="col-md-3"> 
+                    <select  class="normalize" name="id_contractor" form="filer_form">
+                        <option value="-">выберите</option>
                         <?php    
                             while ($option_contractor = mysqli_fetch_array($counterparties_tbl)) {    
                         ?>
                             <option value="<?php echo $option_contractor["id"];?>"><?php echo $option_contractor["name"]?></option>
                         <?php
+                            };    
+                        ?>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="normalize" name="id_sale_agent" form="filer_form">
+                        <option value="-">--выберитe---</option>
+                        <?php    
+                            while ($option = mysqli_fetch_array($users_tbl)) {    
+                        ?>
+                            <option value="<?php echo $option["id"];?>"><?php echo $option["surname"]?> <?php echo $option["name"];?> <?php echo $option["fathername"];?></option>
+                        <?php       
                             };    
                         ?>
                     </select>
@@ -323,5 +347,6 @@ $(document).ready(function () {
 // 
 
 </script>
+<script src="js/snipping.js"></script>
 </body>
 </html>

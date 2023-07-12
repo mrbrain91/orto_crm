@@ -43,6 +43,23 @@ function add_each_pro($connect) {
 }
 
 
+function add_prod($connect, $id_supplier, $total_name, $order_date, $order_note) {
+	
+	$t = "INSERT INTO order_tbl (supplier_id, sum_order, date_order, order_note) VALUES ('%s', '%s', '%s', '%s')";
+	
+	$query = sprintf($t, mysqli_real_escape_string($connect, $id_supplier),
+						mysqli_real_escape_string($connect, $total_name),
+						mysqli_real_escape_string($connect, $order_date),
+						mysqli_real_escape_string($connect, $order_note));
+    $result = mysqli_query($connect, $query);
+	if(!$result)
+		die(mysqli_error($connect));
+	elseif($result) {
+		redirect('in_store.php');
+	}
+}
+
+
 
 //
 
@@ -78,7 +95,6 @@ $product_list = mysqli_query ($connect, $sql);
      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/bootstrap-grid.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.default.min.css" />
 
     <!--selectize css-->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.default.min.css" /> 
@@ -86,7 +102,9 @@ $product_list = mysqli_query ($connect, $sql);
     <link rel="stylesheet" href="css/style.css">
     <title>ortosavdo</title>
 </head>
-<body>
+<body> 
+<!-- Container element to hold the snipping GIF -->
+<div id="snipping-container"></div>
     
 <?php include 'partSite/nav.php'; ?>
 
@@ -174,8 +192,8 @@ $product_list = mysqli_query ($connect, $sql);
 
                 
                 <tr>
-                    <td class="col-sm-4">
-                            <select required class="form-control"  name="prod_name[]" form="order_form" >
+                    <td class="col-sm-2">
+                            <select required class="normalize"  name="prod_name[]" form="order_form" id='prod_name_1'>
                                 <option  value="">--выберитe продукцию---</option>
                                 <?php     
                                     while ($option = mysqli_fetch_array($product_list)) {    
@@ -187,7 +205,7 @@ $product_list = mysqli_query ($connect, $sql);
                             </select>
                     </td>
                     <td class="col-sm-1">
-                        <input required type="text" name="count_name[]"  class="form-control" form="order_form"/>
+                        <input required type="number" min="1" name="count_name[]"  class="form-control" form="order_form"/>
                         
                     </td>
                     <!-- <td class="col-sm-2">
@@ -222,6 +240,8 @@ $product_list = mysqli_query ($connect, $sql);
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js"></script>
+
+<script src="js/snipping.js"></script>
 </body>
 
 
@@ -237,21 +257,27 @@ $('.normalize').selectize();
 
 $(document).ready(function () {
     var counter = 0;
- 
+    var inc = 1;
+    
 
     $("#addrow").on("click", function () {
+        inc++;
         var newRow = $("<tr>");
         var cols = "";                                                      
         
-        cols += '<td class="col-sm-4"><select required name="prod_name[]" form="order_form" class="form-control"><option value="">--выберитe продукцию---</option><?php while ($option = mysqli_fetch_array($product_list)) { ?> <option value="<?php echo $option["id"];?>"><?php echo $option["name"];?></option> <?php }; ?></select></td>'
-        cols += '<td><input required type="text" name="count_name[]"  class="form-control" form="order_form"/></td>'; 
-        cols += '<td><input required type="date" name="date_name[]"  class="form-control" form="order_form"/></td>';
+        cols += '<td class="col-sm-2"><select required name="prod_name[]" id="prod_name_'+inc+'" form="order_form"><option value="">--выберитe продукцию---</option><?php while ($option = mysqli_fetch_array($product_list)) { ?> <option value="<?php echo $option["id"];?>"><?php echo $option["name"];?></option> <?php }; ?></select></td>'
+        cols += '<td><input required type="number" min="1" name="count_name[]"  class="form-control" form="order_form"/></td>'; 
+        // cols += '<td><input required type="date" name="date_name[]"  class="form-control" form="order_form"/></td>';
         cols += '<td><input required type="text" name="price_name[]"  class="form-control" form="order_form"/></td>';
         cols += '<td><input type="button" class="ibtnDel btn btn-md btn-danger "  value="-"></td>';
 
         newRow.append(cols);
         $("table.order-list").append(newRow);
         counter++;
+
+        $('#prod_name_'+inc+'').selectize();
+
+
     });
 
 

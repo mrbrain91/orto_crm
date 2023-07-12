@@ -1,3 +1,4 @@
+
 <nav class="navbar navbar-inverse navbar-custom">
   <div class="container-fluid">
     <div class="navbar-header">
@@ -9,6 +10,7 @@
         <a class="dropdown-toggle" data-toggle="dropdown" href="#">Продажи</a>
         <ul class="dropdown-menu">
           <li><a href="order.php">Заказ</a></li>
+          
           <li><a href="archive_order.php">Архив заказов</a></li>
           <li><a href="deleted_order.php">Отмененные заказы</a></li>
           <li><a href="return_list.php">Возврат</a></li>

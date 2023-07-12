@@ -10,34 +10,79 @@ if (!isset($_SESSION['usersname'])) {
 
 
 
-// clear count rest table column
-$column_name = 'count_new_order';
 
-// count of new order items
+//---------------------- add new order -----------------------------------------------
+
+// yangi orderlarni nolga aylantirib olamiz. 
+clear_count_new_rest($connect, 'count_new_order');
+
+// yangi orderlarni sanab oladi
 $get_new_order_item_count = get_new_order_item_count($connect);
 
-clear_count_rest($connect, $column_name);
-// set count new order to rest table
+
+// rest tabledagi yangi orderlarni zapis qilamiz xar zagruzka bolganida
 while($row_store = mysqli_fetch_array($get_new_order_item_count)){
     upd_rest_count_new($connect, $row_store['prod_name'], $row_store['order_count']);
 }
 
+//---------------------- end ------------------------------------------------------------
 
 
-// count of archived items
+
+
+
+
+
+
+
+
+
+
+//---------------------- add archive and delivered order -------------------------------------
+
+// archive va deliveredlarni nolga aylantirib olamiz. 
+clear_count_delivered_archive_rest($connect, 'count_archived_order');
+
+// arxiv va dostavlenolarni sanaydi
 $get_order_item_count = get_order_item_count($connect);
+
 // update rest table 
 while($row_store = mysqli_fetch_array($get_order_item_count)){
     upd_rest_count_archived($connect, $row_store['prod_name'], $row_store['order_count']);
 }
 
-// count of store in
+//---------------------- end -------------------------------------------------------------------
+
+
+
+
+
+
+//---------------------- add count_store order -----------------------------------------------
+
+
+// count_store yani rest tabledagi columnni nolga aylantirib olamiz. 
+clear_count_store_rest($connect, 'count_store');
+
+// prinyat bugan skladga kirgan tovarni sanaydi 
 $get_store_item_count = get_store_item_count($connect);
 // update rest table 
 while($row_store = mysqli_fetch_array($get_store_item_count)){
     upd_rest_count_store($connect, $row_store['prod_name'], $row_store['store_count']);
 }
 
+//---------------------- end -----------------------------------------------------------------------------
+
+
+
+
+
+
+
+//---------------------- add return order -----------------------------------------------
+
+// count_returned_order yani rest tabledagi columnni nolga aylantirib olamiz. 
+clear_count_return_rest($connect, 'count_returned_order');
 
 // count of returned items
 $get_returned_item_count = get_returned_item_count($connect);
@@ -45,6 +90,12 @@ $get_returned_item_count = get_returned_item_count($connect);
 while($row_returned = mysqli_fetch_array($get_returned_item_count)){
     upd_rest_count_return($connect, $row_returned['prod_name'], $row_returned['returned_count']);
 }
+//---------------------- end -----------------------------------------------------------------------------
+
+
+
+
+
 
 
 // get fot list
@@ -74,7 +125,9 @@ $rs_result = mysqli_query ($connect, $query);
     <title>ortosavdo</title>
     
 </head>
-<body>  
+<body> 
+<!-- Container element to hold the snipping GIF -->
+<div id="snipping-container"></div>
 
 <?php include 'partSite/nav.php'; ?>
 
@@ -136,5 +189,6 @@ $rs_result = mysqli_query ($connect, $query);
 </div>
 
 
+<script src="js/snipping.js"></script>
 </body>
 </html>

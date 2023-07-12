@@ -56,17 +56,16 @@ if (isset($_GET['i_r'])) {
 
 if (isset($_GET['id_c'])) {
   $i = $_GET['id_c'];
-  
-  // echo $_GET['i'];
-  $sql = "SELECT ( sum(main_prepayment) - sum(debt)) as balance FROM debts WHERE id_counterpartie = '$i' GROUP BY id_counterpartie";
 
+  $sql = "SELECT (SUM(main_prepayment) - SUM(debt)) AS balance FROM debts WHERE id_counterpartie = ?";
   $stmt = $mysqli->prepare($sql);
-  $stmt->bind_param("s", $_GET['q']);
+  $stmt->bind_param("s", $i);
   $stmt->execute();
   $stmt->store_result();
   $stmt->bind_result($pn);
   $stmt->fetch();
   $stmt->close();
+
   if ($pn>=0) {
    $color = 'green';
    $plus = '+';
@@ -81,23 +80,22 @@ if (isset($_GET['id_c'])) {
   <?php
   }
 
-
-
   //get_balance supplier
 
 if (isset($_GET['id_s'])) {
   $i = $_GET['id_s'];
   
   // echo $_GET['i'];
-  $sql = "SELECT (sum(credit) - sum(debt)) as balance FROM supplier WHERE id_supplier = '$i' GROUP BY id_supplier";
+  $sql = "SELECT (sum(credit) - sum(debt)) as balance FROM supplier WHERE id_supplier = ?";
 
   $stmt = $mysqli->prepare($sql);
-  $stmt->bind_param("s", $_GET['q']);
+  $stmt->bind_param("s", $i);
   $stmt->execute();
   $stmt->store_result();
   $stmt->bind_result($pn);
   $stmt->fetch();
   $stmt->close();
+
   if ($pn>=0) {
    $color = 'green';
   }else {

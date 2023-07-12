@@ -29,6 +29,8 @@ if (!isset($_SESSION['usersname'])) {
     
 </head>
 <body>  
+<!-- Container element to hold the snipping GIF -->
+<div id="snipping-container"></div> 
 
 <?php include 'partSite/nav.php'; ?>
 <div class="container">
@@ -36,4 +38,5 @@ if (!isset($_SESSION['usersname'])) {
 </div>
 
 </body>
+<script src="js/snipping.js"></script>
 </html>

@@ -31,14 +31,14 @@ if (isset($_POST['id_contractor'])) {
     $display_sts_filer_on = 'true';
     
     
-     $query = "SELECT * FROM counterparties_tbl WHERE id = '$id_cont' ORDER BY id DESC";
+     $query = "SELECT * FROM counterparties_tbl WHERE id = '$id_cont' ORDER BY name asc";
  
      $all_debt_query = "SELECT count(id) as allcount FROM counterparties_tbl WHERE id = '$id_cont' ORDER BY id DESC";
  }
  else 
 {
     //list all
-    $query = "SELECT * FROM counterparties_tbl ORDER BY id desc LIMIT 0,".$limit;
+    $query = "SELECT * FROM counterparties_tbl ORDER BY name asc LIMIT 0,".$limit;
     $all_debt_query = "SELECT count(id) as allcount FROM counterparties_tbl";
     
     $display_true = 'true';
@@ -81,7 +81,10 @@ if (isset($_POST['id_contractor'])) {
     <title>ortosavdo</title>
     
 </head>
-<body>  
+<body> 
+<!-- Container element to hold the snipping GIF -->
+<div id="snipping-container"></div>
+
 
 <?php include 'partSite/nav.php'; ?>
 
@@ -290,5 +293,6 @@ $(document).ready(function () {
 </script>
 
 
+<script src="js/snipping.js"></script>
 </body>
 </html>

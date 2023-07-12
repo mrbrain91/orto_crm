@@ -80,7 +80,9 @@ if (isset($_POST['id_contractor'])) {
     <link rel="stylesheet" href="css/style.css">
     <title>ortosavdo</title>
 </head>
-<body>  
+<body> 
+<!-- Container element to hold the snipping GIF -->
+<div id="snipping-container"></div> 
 
 <?php include 'partSite/nav.php'; ?>
 
@@ -415,5 +417,6 @@ function exportTableToExcel(tableID, filename = ''){
 
 
 </script>
+<script src="js/snipping.js"></script>
 </body>
 </html>
