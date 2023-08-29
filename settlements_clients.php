@@ -46,7 +46,7 @@ $rs_result = mysqli_query ($connect, $query);
     </div>    
 </div>
 
-<div class="toolbar">
+<div style="display:none;" class="toolbar">
         <div class="container-fluid">
            <!-- <a href="booked_payment_list.php"> <button type="button" class="btn btn-primary">история взаимарасчетов</button> </a> -->
         </div>

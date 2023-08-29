@@ -323,6 +323,10 @@ $(function() {
   $('.selectpicker').selectpicker();
 });
 
+// function formatBYUnber thousand separator
+function formatNumber(number) {
+  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
 
 
 // -------------------------------------------- select bazadan olish-------------------------------------------------------
@@ -370,18 +374,20 @@ $(document).ready(function() {
             var afterSale = price - ((-price*sale)/100);
             $('#after_sale_'+ind).val(afterSale);
             $('#sale_type_'+ind).val('percent');
-            $('#total_cost_'+ind).val(totNumber);
+            $('#total_cost_'+ind).val(formatNumber(totNumber));
             calculateSubTotal();
         }
 
         function calculateSubTotal() {
-            var subtotal = 0;
-            $('.total_cost').each(function() {
-                subtotal += parseFloat($(this).val());
-            });
+        var subtotal = 0;
+        $('.total_cost').each(function() {
+            var value = $(this).val().replace(/\s/g, ''); // Remove thousand separators
+            subtotal += parseFloat(value);
+        });
 
-            $('#subtotal').val(subtotal);
+        $('#subtotal').val(formatNumber(subtotal));
         }
+
     });
 
     $('input[type=radio][id=ChoiseSum]').change(function() {
@@ -405,18 +411,20 @@ $(document).ready(function() {
             afterSale = price - (-sale);
             $('#after_sale_'+ind).val(afterSale);
             $('#sale_type_'+ind).val('sum');
-            $('#total_cost_'+ind).val(totNumber);
+            $('#total_cost_'+ind).val(formatNumber(totNumber));
             calculateSubTotal();
         }
 
         function calculateSubTotal() {
-            var subtotal = 0;
-            $('.total_cost').each(function() {
-                subtotal += parseFloat($(this).val());
-            });
+        var subtotal = 0;
+        $('.total_cost').each(function() {
+            var value = $(this).val().replace(/\s/g, ''); // Remove thousand separators
+            subtotal += parseFloat(value);
+        });
 
-            $('#subtotal').val(subtotal);
-        }
+        $('#subtotal').val(formatNumber(subtotal));
+}
+
     });
 
     // Check if no radio button is selected on page load
@@ -441,18 +449,20 @@ $(document).ready(function() {
             var afterSale = price - ((-price*sale)/100);
             $('#after_sale_'+ind).val(afterSale);
             $('#sale_type_'+ind).val('percent');
-            $('#total_cost_'+ind).val(totNumber);
+            $('#total_cost_'+ind).val(formatNumber(totNumber));
             calculateSubTotal();
         }
 
         function calculateSubTotal() {
-            var subtotal = 0;
-            $('.total_cost').each(function() {
-                subtotal += parseFloat($(this).val());
-            });
+        var subtotal = 0;
+        $('.total_cost').each(function() {
+            var value = $(this).val().replace(/\s/g, ''); // Remove thousand separators
+            subtotal += parseFloat(value);
+        });
 
-            $('#subtotal').val(subtotal);
-        }
+        $('#subtotal').val(formatNumber(subtotal));
+}
+
     }
 
     $(document).on('click', '.btn_remove', function() {

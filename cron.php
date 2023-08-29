@@ -6,12 +6,17 @@ require 'PHPMailer/src/Exception.php';
 require 'PHPMailer/src/PHPMailer.php';
 require 'PHPMailer/src/SMTP.php';
 
-
 // Set the timezone
 date_default_timezone_set('Asia/Tashkent');
 
 // Get the current date and time
 $currentDateTime = date('Y-m-d H:i:s');
+
+// Email configuration
+$senderEmail = 'f.yuldashev.tuit@gmail.com';
+$recipientEmail = 'f.yuldashev.tuit@gmail.com';
+$subject = 'Regular Email with Backup';
+$body = 'This is a regular email message with a backup file attached:  '.$currentDateTime;
 
 // MySQL database connection details
 $servername = "localhost";
@@ -32,14 +37,6 @@ if ($zip->open($compressedFile, ZipArchive::CREATE) === true) {
     $zip->close();
 }
 
-// Email configuration
-$senderEmail = 'f.yuldashev.tuit@gmail.com';
-$recipientEmail = 'f.yuldashev.tuit@gmail.com';
-// $recipientEmail = 'sharipovjasur@gmail.com';;hljkguyrysjh ko
-$subject = 'Database Backup';
-$body = 'ORTOSAVDO SQL BAZASI sana:'.$currentDateTime;
-
-
 // Create a new PHPMailer instance
 $mail = new PHPMailer;
 
@@ -51,7 +48,6 @@ $mail->Username = 'f.yuldashev.tuit@gmail.com'; // Replace with your Gmail email
 $mail->Password = 'jgzezpofypfbzhuf'; // Replace with the app password generated for your PHP script
 $mail->Port = 587;
 $mail->SMTPSecure = 'tls';
-
 
 // Set the email details
 $mail->setFrom($senderEmail, 'Fazliddin');
@@ -71,12 +67,6 @@ if (!$mail->send()) {
 }
 
 // Delete the temporary files
-// unlink($backupFile);
-// unlink($compressedFile);
+unlink($backupFile);
+unlink($compressedFile);
 ?>
-
-
-
-
-
-
