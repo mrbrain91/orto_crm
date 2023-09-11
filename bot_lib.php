@@ -172,7 +172,9 @@ function clear_count_return_rest($connect, $column_name) {
 
 //get_ortder_item count for rest new bron order
 function get_new_order_item_count($connect){
-	$query = "SELECT prod_name, SUM(count_name) AS order_count FROM main_ord__item_tbl WHERE order_itm_sts='0' GROUP BY prod_name ORDER BY order_count DESC";
+	// $query = "SELECT prod_name, SUM(count_name) AS order_count FROM main_ord__item_tbl WHERE order_itm_sts='0' GROUP BY prod_name ORDER BY order_count DESC";
+	$query = "SELECT prod_name, SUM(count_name) AS order_count FROM main_ord__item_tbl WHERE order_itm_sts IN ('0', '6') GROUP BY prod_name ORDER BY order_count DESC";
+
 	$rs_result = mysqli_query ($connect, $query);
 	return $rs_result;
 }
@@ -394,6 +396,18 @@ function upd_order_sts($connect, $archive_id){
 	return true;
 }
 
+// function change status to ready
+function upd_order_sts_ready($connect, $ready_id){
+	$sql = "UPDATE main_ord_tbl
+	SET 
+	order_status = '6'
+	WHERE id='$ready_id'";
+	$result = mysqli_query($connect, $sql);
+	if(!$result)
+		die(mysqli_error($connect));
+	return true;
+}
+
 
 // orto prixod prinyat qilganda, prixod statusini o'zgartirish
 function upd_store_sts($connect, $store_id){
@@ -497,6 +511,17 @@ function upd_order_itm_sts($connect, $archive_id){
 	SET 
 	order_itm_sts = '1'
 	WHERE order_id='$archive_id'";
+	$result = mysqli_query($connect, $sql);
+	if(!$result)
+		die(mysqli_error($connect));
+	return true;
+}
+
+function upd_order_itm_sts_ready($connect, $ready_id){
+	$sql = "UPDATE main_ord__item_tbl
+	SET 
+	order_itm_sts = '6'
+	WHERE order_id='$ready_id'";
 	$result = mysqli_query($connect, $sql);
 	if(!$result)
 		die(mysqli_error($connect));

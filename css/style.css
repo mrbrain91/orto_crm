@@ -553,6 +553,13 @@ input[type="radio"]:checked + label {
   padding: 3px 20px;
 }
 
+.ready {
+  background-color: #e68a00;
+  /* Darker Orange */
+  color: white;
+  padding: 3px 20px;
+}
+
 .archived {
   background-color: #335a95;
   /* Grey */
@@ -610,12 +617,10 @@ input[type="radio"]:checked + label {
 .invoice__bottom_item {
   width: 48%;
 }
-
-
 /* CSS styles for the container element */
 #snipping-container {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }

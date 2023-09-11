@@ -615,6 +615,12 @@ input[type="radio"]:checked + label {
 	color: white;
 	padding: 3px 20px;
 }
+
+.ready {
+    background-color: #e68a00; /* Darker Orange */
+    color: white;
+    padding: 3px 20px;
+}
  
 .archived {
     background-color: #335a95; /* Grey */

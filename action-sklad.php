@@ -22,6 +22,18 @@ if (isset($_GET['archive_id'])) {
 //end order move to archive
 
 
+// order move to ready
+if (isset($_GET['ready_id'])) {
+    $ready_id = $_GET['ready_id'];
+    if (upd_order_sts_ready($connect, $ready_id)) {
+       if (upd_order_itm_sts_ready($connect, $ready_id)) {
+		    header("Location: order-sklad.php?message=Успешно статус изменень №_".$ready_id."");  
+        }
+    }
+}
+//end order move to ready
+
+
 
 // renew order move delivered to new
 if (isset($_GET['renew_id'])) {

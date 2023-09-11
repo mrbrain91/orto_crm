@@ -20,7 +20,9 @@ $counterparties_tbl = mysqli_query ($connect, $sql);
 
 
 // for count
-$count_query = "SELECT count(*) as allcount FROM main_ord_tbl WHERE order_status='0' OR order_status='1' ORDER BY id DESC";
+// $count_query = "SELECT count(*) as allcount FROM main_ord_tbl WHERE order_status='0' OR order_status='1' ORDER BY id DESC";
+$count_query = "SELECT COUNT(*) AS allcount FROM main_ord_tbl WHERE order_status IN ('0', '1', '6') ORDER BY id DESC";
+
 $count_result = mysqli_query($connect,$count_query);
 $count_fetch = mysqli_fetch_array($count_result);
 $postCount = $count_fetch['allcount'];
@@ -41,18 +43,24 @@ if (isset($_POST['id_contractor']) AND isset($_POST['from_date']) AND isset($_PO
     $display_sts_filer_on = 'true';
     
     
-     $query = "SELECT * FROM main_ord_tbl WHERE order_status>=0 AND order_status <=1 AND contractor = '$id_cont' AND ord_date >= '$fr_date' AND ord_date <= '$to_date' ORDER BY id DESC";
- 
-     $all_debt_query = "SELECT sum(transaction_amount) as all_debt, count(id) as allcount FROM main_ord_tbl WHERE contractor = '$id_cont' AND order_status>=0 AND order_status <=1 AND ord_date >= '$fr_date' AND ord_date <= '$to_date' ORDER BY id DESC";
+    //  $query = "SELECT * FROM main_ord_tbl WHERE order_status>=0 AND order_status <=1 AND contractor = '$id_cont' AND ord_date >= '$fr_date' AND ord_date <= '$to_date' ORDER BY id DESC";
+    $query = "SELECT * FROM main_ord_tbl WHERE order_status IN ('0', '1', '6') AND contractor = '$id_cont' AND ord_date >= '$fr_date' AND ord_date <= '$to_date' ORDER BY id DESC";
+
+    //  $all_debt_query = "SELECT sum(transaction_amount) as all_debt, count(id) as allcount FROM main_ord_tbl WHERE contractor = '$id_cont' AND order_status>=0 AND order_status <=1 AND ord_date >= '$fr_date' AND ord_date <= '$to_date' ORDER BY id DESC";
+     $all_debt_query = "SELECT SUM(transaction_amount) AS all_debt, COUNT(id) AS allcount FROM main_ord_tbl WHERE contractor = '$id_cont' AND order_status IN ('0', '1', '6') AND ord_date >= '$fr_date' AND ord_date <= '$to_date' ORDER BY id DESC";
+
     
   
  
  }
  else {
      //list all
-     $query = "SELECT * FROM main_ord_tbl WHERE order_status='0' OR order_status='1' ORDER BY id desc LIMIT 0,".$limit;
-     $all_debt_query = "SELECT sum(transaction_amount) as all_debt, count(id) as allcount FROM main_ord_tbl WHERE order_status='0' OR order_status='1'";
-     
+    //  $query = "SELECT * FROM main_ord_tbl WHERE order_status='0' OR order_status='1' ORDER BY id desc LIMIT 0,".$limit;
+     $query = "SELECT * FROM main_ord_tbl WHERE order_status IN ('0', '1', '6') ORDER BY id DESC LIMIT 0, " . $limit;
+
+    //  $all_debt_query = "SELECT sum(transaction_amount) as all_debt, count(id) as allcount FROM main_ord_tbl WHERE order_status='0' OR order_status='1'";
+    $all_debt_query = "SELECT SUM(transaction_amount) AS all_debt, COUNT(id) AS allcount FROM main_ord_tbl WHERE order_status IN ('0', '1', '6')";
+
      $display_true = 'true';
      $display_none = 'none';
 }
@@ -147,7 +155,6 @@ if(mysqli_num_rows($rs_result) == 0) {
                     </div>
                 </div>  
             </div>
-          
         </div>
 </div>
 
@@ -187,7 +194,18 @@ if(mysqli_num_rows($rs_result) == 0) {
       $display_btn3 = 'true';
       $display_btn4 = 'true';
       $display_btn5 = 'none';
-    }elseif ($row["order_status"] == 1) {
+      $display_btn6 = 'true';
+    }elseif ($row["order_status"] == 6) {
+        $status = 'Готов';
+        $btn = 'ready';
+        $display_btn1 = 'true';
+        $display_btn2 = 'none';
+        $display_btn3 = 'true';
+        $display_btn4 = 'true';
+        $display_btn5 = 'none';
+        $display_btn6 = 'none';
+    }
+    elseif ($row["order_status"] == 1) {
         $status = 'Доставлено';
         $btn = 'delivered';
         $display_btn1 = 'none';
@@ -195,7 +213,8 @@ if(mysqli_num_rows($rs_result) == 0) {
         $display_btn3 = 'none';
         $display_btn4 = 'none';
         $display_btn5 = 'true';
-      }
+        $display_btn6 = 'none';
+    }
 
 ?> 
         
@@ -212,14 +231,13 @@ if(mysqli_num_rows($rs_result) == 0) {
         </tr>
         <tr>
             <td colspan="12" style="border:0px;  background-color: #fafafb;" class="hiddenRow"><div class="accordian-body collapse" id="row<?php echo $i;?>"> 
+                <!-- btn view -->
                 <a href="view_inside_order-sklad.php?id=<?php echo $row["id"]; ?>&&payment_type=<?php echo $row["payment_type"]; ?>&&sale_agent=<?php echo $row["sale_agent"]; ?>&&contractor=<?php echo $row["contractor"]; ?>&&date=<?php echo $row["ord_date"]; ?>&&del_date=<?php echo $row["ord_deliver_date"]; ?>"><button class="btn btn-custom">Просмотр</button> </a>
-                <!-- <a href="edit_inside_order.php?id=<?php echo $row["id"]; ?>&&payment_type=<?php echo $row["payment_type"]; ?>&&sale_agent=<?php echo $row["sale_agent"]; ?>&&contractor=<?php echo $row["contractor"]; ?>&&date=<?php echo $row["ord_date"]; ?>&&del_date=<?php echo $row["ord_deliver_date"]; ?>"><button style="display:<?php echo $display_btn3; ?>" class="btn btn-custom">Редактировать</button> </a> -->
+                <!-- btn ready -->
+                <a href="action-sklad.php?ready_id=<?=$row['id']?>&&contractor_id=<?=$row['contractor']?>&&debt=<?=$row['transaction_amount']?>&&ord_deliver_date=<?=$row['ord_deliver_date']?>&&payment_type=<?=$row['payment_type']?>"><button style="display:<?php echo $display_btn6; ?>" onclick="return confirm('Готов?')" class="btn btn-custom">Готов</button> </a>
+                <!-- btn delivered -->
                 <a href="action-sklad.php?archive_id=<?=$row['id']?>&&contractor_id=<?=$row['contractor']?>&&debt=<?=$row['transaction_amount']?>&&ord_deliver_date=<?=$row['ord_deliver_date']?>&&payment_type=<?=$row['payment_type']?>"><button style="display:<?php echo $display_btn1; ?>" onclick="return confirm('Доставлено?')" class="btn btn-custom">Доставлено</button> </a>
-                <!-- <a href="action.php?renew_id=<?=$row['id']?>"><button style="display:<?php echo $display_btn2; ?>" onclick="return confirm('Новый?')" class="btn btn-custom">Новый</button> </a> -->
-                <!-- <a href="action.php?closed_id=<?=$row['id']?>"><button style="display:<?php echo $display_btn5; ?>" onclick="return confirm('Архив?')" class="btn btn-custom">Архив</button> </a> -->
-                <!-- <a href="action.php?delete_id=<?=$row['id']?>"><button style="display:<?php echo $display_btn4; ?>" onclick="return confirm('Отменить?')" class="btn btn-custom">Отменить</button> </a> -->
-                <!-- <a href="schet_faktura.php?id=<?=$row['id']?>&&contractor_id=<?=$row['contractor']?>" class="btn btn-custom" target="_blank">Счет-фактура</button> </a> -->
-            </div> </td>
+            </td>
         </tr>
         
 <?php       
