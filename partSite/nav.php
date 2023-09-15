@@ -34,6 +34,7 @@
           <li><a href="cash_out.php">Расход с кассы (РКО)</a></li>
           <li><a href="act.php">Акт-сверки</a></li>
           <li><a href="supplier_list.php">Оплаты поставщикам</a></li>
+          <li><a href="report.php">Отчеты</a></li>
 
 
         </ul>
