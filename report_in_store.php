@@ -19,18 +19,18 @@ if (isset($_POST['id_product'])) {
     $display = 'true';
     $btn_display = 'true';
 
-    $contractor = get_contractor($connect, $id_contractor); 
+    $contractor = get_supplier($connect, $id_contractor); 
     $id_product = $_POST['id_product'];
     $from_date = $_POST['from_date'];
     $to_date = $_POST['to_date'];
 
 
     // Query to fetch specific columns from both tables, including the contractor by order ID     
-    $qr_start = "SELECT moit.date_name, moit.count_name, moit.total_name, mot.contractor
-            FROM main_ord__item_tbl AS moit
-            JOIN main_ord_tbl AS mot ON moit.order_id = mot.id
-            WHERE moit.prod_name = $id_product AND moit.date_name BETWEEN '$from_date' AND '$to_date' AND moit.order_itm_sts IN (1, 4)
-            ORDER BY moit.date_name";
+    $qr_start = "SELECT oit.date_name, oit.count_name, oit.total_name, ot.supplier_id
+            FROM order_item_product AS oit
+            JOIN order_tbl AS ot ON oit.order_id = ot.id
+            WHERE oit.prod_name = $id_product AND oit.date_name BETWEEN '$from_date' AND '$to_date' AND oit.store_itm_sts IN (1)
+            ORDER BY oit.date_name";
 
 
     $rs_qr_start = mysqli_query($connect, $qr_start);
@@ -76,7 +76,7 @@ $dateValue = $currentDate . ' ' . $endOfDay;
         <i class="fa fa-clone" aria-hidden="true"></i>
         <i class="fa fa-angle-double-right right_cus"></i>
         <span class="right_cus">Отчеты</span>
-    </div>    
+    </div>
 </div>
 
 
@@ -84,10 +84,10 @@ $dateValue = $currentDate . ' ' . $endOfDay;
 <!-- Tab item -->
 <ul class="nav nav-tabs">
   <li class="nav-item">
-    <a style="color: #666666; border-bottom: 2px solid #5db85c;" class="nav-link active" aria-current="page" href="#">отчет о продажах продукции</a>
+    <a style="color: #666666;" class="nav-link active" aria-current="page" href="report.php">отчет о продажах продукции</a>
   </li>
   <li class="nav-item">
-    <a style="color: #666666;" class="nav-link" href="report_in_store.php">отчет о получении товара</a>
+    <a style="color: #666666; border-bottom: 2px solid #5db85c;" class="nav-link" href="report_in_store.php">отчет о получении товара</a>
   </li>
 </ul>
 <!-- End tab item -->
@@ -153,12 +153,12 @@ $dateValue = $currentDate . ' ' . $endOfDay;
     <!-- <center><p>Product ID: <?php echo $id_product; ?></p></center> -->
     <center><p style='font-size: 14px; font-weight: 600;'> <?php $name = get_prod_name($connect, $id_product); echo $name['name']; ?></p></center>
 
-    <center style='color:red;'>продажа на период: <b><?php echo $date = date("d.m.Y", strtotime($from_date)); ?> - <?php echo $date = date("d.m.Y", strtotime($to_date)); ?></center> 
+    <center style='color:green;'>поступления за период:  <b><?php echo $date = date("d.m.Y", strtotime($from_date)); ?> - <?php echo $date = date("d.m.Y", strtotime($to_date)); ?></center> 
     <table id="tblData" class="table table-striped table-bordered act_td" style="width:70%; margin: 0 auto; margin-top: 30px;">
 
         <tr>
             <th>Дата</th>
-            <th>Контрагент</th>
+            <th>Доставщик</th>
             <th>Количество</th>
             <th>Сумма</th>
         </tr>
@@ -172,7 +172,9 @@ $dateValue = $currentDate . ' ' . $endOfDay;
                 echo "<tr style='font-weight: 400;'>";
                     echo "<td>" . $date = date("d.m.Y", strtotime($row["date_name"])) . "</td>";
 
-                    $user = get_contractor($connect, $row["contractor"]);
+                    $user = get_supplier($connect, $row["supplier_id"]);
+
+
                     echo "<td>" . $user["name"] . "</td>";
 
                     echo "<td>" . number_format($row["count_name"], 0, ',', ' ') . "</td>";
