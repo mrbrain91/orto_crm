@@ -136,6 +136,7 @@ if (isset($_POST['id_contractor'])) {
                 <th scope="col">Ид</th>
                 <th scope="col">Название</th>
                 <th scope="col">Альтернативное название</th>
+                <th scope="col">Торговый представитель</th>
                 <th scope="col">ИНН</th>
                 <th scope="col">Статус</th>
             </tr>
@@ -158,6 +159,8 @@ if (isset($_POST['id_contractor'])) {
                 <td><?php echo $row["id"]; ?></td>
                 <td><?php echo $row["name"]; ?></td>
                 <td><?php echo $row["alternative_name"]; ?></td>
+                <td><?php $user = get_user($connect, $row["user_id"]);?>&nbsp;<?php echo $user["surname"]; ?>&nbsp;<?php echo $user["name"]; ?>&nbsp;<?php echo $user["fathername"]; ?></td>
+
                 <td><?php echo $row["inn"]; ?></td>
                 <td style="color: <?php echo $sts_color; ?>"><?php echo $sts; ?></td>
             </tr>

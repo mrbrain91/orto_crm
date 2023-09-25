@@ -951,15 +951,15 @@ function add_product($connect, $name, $unit) {
 	}
 }	
 
-function add_counterparties($connect, $name, $alternative_name, $inn, $nds, $raschetny_schet, $mfo, $address, $contact, $director, $accountant) {
+function add_counterparties($connect, $name, $alternative_name, $inn, $nds, $raschetny_schet, $mfo, $address, $contact, $director, $accountant, $user_id) {
 	
-	$sql = "INSERT INTO `counterparties_tbl` (`name`, `alternative_name`, `inn`, `nds`, `raschetny_schet`, `mfo`, `address`, `contact`, `director`, `accountant`) VALUES ('".$name."','".$alternative_name."','".$inn."','".$nds."','".$raschetny_schet."','".$mfo."','".$address."','".$contact."','".$director."','".$accountant."');";
+	$sql = "INSERT INTO `counterparties_tbl` (`name`, `alternative_name`, `inn`, `nds`, `raschetny_schet`, `mfo`, `address`, `contact`, `director`, `accountant`, `user_id`) VALUES ('".$name."','".$alternative_name."','".$inn."','".$nds."','".$raschetny_schet."','".$mfo."','".$address."','".$contact."','".$director."','".$accountant."','".$user_id."');";
 	if(mysqli_query($connect, $sql)) {
 		redirect("counterparties.php");
 	}	
 }
 
-function edit_counterpartie($connect, $name, $alternative_name, $inn, $nds, $raschetny_schet, $mfo, $address, $contact, $director, $accountant, $id) {
+function edit_counterpartie($connect, $name, $alternative_name, $inn, $nds, $raschetny_schet, $mfo, $address, $contact, $director, $accountant, $id, $user_id) {
 	
 	$sql = "UPDATE `counterparties_tbl` 
 			SET
@@ -972,7 +972,8 @@ function edit_counterpartie($connect, $name, $alternative_name, $inn, $nds, $ras
 				address = '$address',
 				contact = '$contact',
 				director = '$director',
-				accountant = '$accountant' 
+				accountant = '$accountant',
+				user_id = '$user_id' 
 			WHERE id = '$id'";
 	if(mysqli_query($connect, $sql)) {
 		redirect("counterparties.php");

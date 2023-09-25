@@ -7,66 +7,37 @@ if (!isset($_SESSION['usersname'])) {
   header("location: index.php");
 }
 
+//get  users
+$sql = "SELECT * FROM users_tbl WHERE role='sale'";
+$users_tbl = mysqli_query ($connect, $sql);
+//end get users 
+
 $last_id = get_id_new_order($connect);
 
 
 if(isset($_POST['submit']) && $_POST['submit'] == 'Сохранить') {
     $name = $_POST['name'];	
-
-    if (!empty($_POST['alternative_name'])) {
-        $alternative_name = $_POST['alternative_name'];
-    }else {
-        $alternative_name = "-";
+    $user_id = $_POST['user_id'];	
+    $keys = array(
+        'alternative_name',
+        'inn',
+        'nds',
+        'raschetny_schet',
+        'mfo',
+        'address',
+        'contact',
+        'director',
+        'accountant'
+    );
+    
+    foreach ($keys as $key) {
+        if (!empty($_POST[$key])) {
+            $$key = $_POST[$key];
+        } else {
+            $$key = "-";
+        }
     }
-
-    if (!empty($_POST['inn'])) {
-        $inn = $_POST['inn'];
-    }else {
-        $inn = "-";
-    }
-
-    if (!empty($_POST['nds'])) {
-        $nds = $_POST['nds'];
-    }else {
-        $nds = "-";
-    }
-
-    if (!empty($_POST['raschetny_schet'])) {
-        $raschetny_schet = $_POST['raschetny_schet'];
-    }else {
-        $raschetny_schet = "-";
-    }
-
-    if (!empty($_POST['mfo'])) {
-        $mfo = $_POST['mfo'];
-    }else {
-        $mfo = "-";
-    }
-
-    if (!empty($_POST['address'])) {
-        $address = $_POST['address'];
-    }else {
-        $address = "-";
-    }
-
-    if (!empty($_POST['contact'])) {
-        $contact = $_POST['contact'];
-    }else {
-        $contact = "-";
-    }
-
-    if (!empty($_POST['director'])) {
-        $director = $_POST['director'];
-    }else {
-        $director = "-";
-    }
-
-    if (!empty($_POST['accountant'])) {
-        $accountant = $_POST['accountant'];
-    }else {
-        $accountant = "-";
-    }
-    add_counterparties($connect, $name, $alternative_name, $inn, $nds, $raschetny_schet, $mfo, $address, $contact, $director, $accountant);
+    add_counterparties($connect, $name, $alternative_name, $inn, $nds, $raschetny_schet, $mfo, $address, $contact, $director, $accountant, $user_id);
 }
 
 
@@ -84,6 +55,9 @@ if(isset($_POST['submit']) && $_POST['submit'] == 'Сохранить') {
      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/bootstrap-grid.min.css">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.default.min.css" /> 
+
     <link rel="stylesheet" href="css/style.css">
     <title>ortosavdo</title>
 </head>
@@ -117,17 +91,21 @@ if(isset($_POST['submit']) && $_POST['submit'] == 'Сохранить') {
                 <div class="col-md-3">
                     <span>Название <span style="color:red;">*</span></span>
                 </div>
-                
+                <div class="col-md-3">
+                    <span>Альтернативное название</span>
+                </div>
             </div>
             <div class="row">
                 <div class="col-md-3">
                     <input  required type="text" class="form-control" name="name" form="counterpartie_form" >
                 </div>
-                
+                <div class="col-md-3"> 
+                    <input type="text" class="form-control" name="alternative_name" form="counterpartie_form">
+                </div>
             </div>
             <div class="row mt">
                 <div class="col-md-3">
-                    <span>Альтернативное название</span>
+                    <span>Прикрепить торговый представитель <span style="color:red;">*</span></span>
                 </div>
                 <div class="col-md-3">
                     <span>ИНН/ПНФЛ</span>
@@ -138,8 +116,17 @@ if(isset($_POST['submit']) && $_POST['submit'] == 'Сохранить') {
                 
             </div>
             <div class="row">
-                <div class="col-md-3"> 
-                    <input type="text" class="form-control" name="alternative_name" form="counterpartie_form">
+                <div class="col-md-3">
+                    <select required name="user_id" form="counterpartie_form" class="normalize">
+                        <option value="">--выберитe---</option>
+                        <?php    
+                            while ($option = mysqli_fetch_array($users_tbl)) {    
+                        ?>
+                            <option value="<?php echo $option["id"];?>"><?php echo $option["surname"]?> <?php echo $option["name"];?> <?php echo $option["fathername"];?></option>
+                        <?php       
+                            };    
+                        ?>
+                    </select>
                 </div>
                 <div class="col-md-3">
                     <input  type="text" class="form-control" name="inn" form="counterpartie_form">
@@ -208,6 +195,12 @@ if(isset($_POST['submit']) && $_POST['submit'] == 'Сохранить') {
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 <script src="js/snipping.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.min.js"></script>
+
+
+<script>
+    $('.normalize').selectize();
+</script>
 </body>
 </html>
 
