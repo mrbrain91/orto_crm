@@ -59,9 +59,8 @@ $rs_result = mysqli_query ($connect, $query);
                 <tr>
                     <th scope="col">ID</th>
                     <th scope="col">Контрагент</th>
+                    <th scope="col">Торговый представитель</th>
                     <th scope="col">ИНН</th>
-                    <!-- <th scope="col">Долг</th> -->
-                    <!-- <th scope="col">Предоплата</th> -->
                     <th scope="col" style="text-align:right;">Сумма</th>
                 </tr>
             </thead>
@@ -116,6 +115,7 @@ $rs_result = mysqli_query ($connect, $query);
     <tr data-toggle="collapse" data-target="#row<?php echo $i;?>" aria-expanded="true" class="accordion-toggle">
         <td><?php echo $i; ?></td>
         <td style="background-color:<?php echo $bg_clr;?>"><?php $user = get_contractor($connect, $row["id_counterpartie"]); echo $user["name"];?></td>
+        <td><?php $users = get_user($connect, $user["user_id"]);?>&nbsp;<?php echo $users["surname"]; ?>&nbsp;<?php echo $users["name"]; ?>&nbsp;<?php echo $users["fathername"]; ?></td>
         <td><?php echo $user['inn']?></td>
         <td class="text-right"><?php echo number_format($sum, 0, ',', ' '); ?></td>
     </tr>

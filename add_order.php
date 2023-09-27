@@ -151,10 +151,10 @@ if(isset($_POST['submit']) && $_POST['submit'] == 'Принять') {
             </div>
             <div class="row mt">
                 <div class="col-md-3">
-                    <span>Торговый представитель</span>
+                    <span>Контрагент</span>
                 </div>
                 <div class="col-md-3">
-                    <span>Контрагент</span>
+                    <span>Торговый представитель</span>
                 </div>
                 <div class="col-md-3">
                     <span>Баланс контрагента</span>
@@ -162,19 +162,7 @@ if(isset($_POST['submit']) && $_POST['submit'] == 'Принять') {
             </div>
             <div class="row">
                 <div class="col-md-3">
-                    <select required name="main_order_sale_agent" form="order_form" class="normalize">
-                        <option value="">--выберитe---</option>
-                        <?php    
-                            while ($option = mysqli_fetch_array($users_tbl)) {    
-                        ?>
-                            <option value="<?php echo $option["id"];?>"><?php echo $option["surname"]?> <?php echo $option["name"];?> <?php echo $option["fathername"];?></option>
-                        <?php       
-                            };    
-                        ?>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <select required name="main_order_contractor" form="order_form" class="normalize" onchange="showCustomerBalance(this.value)">
+                    <select required name="main_order_contractor" form="order_form" class="normalize" onchange="callTwoFunctions(this.value)">
                         <option value="">--выберитe---</option>
                         <?php    
                             while ($option_contractor = mysqli_fetch_array($counterparties_tbl)) {    
@@ -185,6 +173,16 @@ if(isset($_POST['submit']) && $_POST['submit'] == 'Принять') {
                             };    
                         ?>
                     </select>
+                </div>
+                <div class="col-md-3">
+                    <div id="main_order_sale_agent">
+                        <input disabled type="text" class="form-control" value="">
+                    </div>
+                </div>
+                <div hidden class="col-md-3">
+                    <div id="main_order_sale_agent2">
+                        <input hidden name='main_order_sale_agent' type="text" class="form-control" value="">
+                    </div>
                 </div>
                 <div class="col-md-3">
                     <div id="balance">
@@ -549,6 +547,47 @@ function showCustomerBalance(str) {
   };
   xhttp.open("GET", "getcustomer.php?id_c="+str+"", true);
   xhttp.send();
+}
+
+function showCustomerUser(str) {
+  var xhttp;    
+  if (str == "") {
+    document.getElementById("main_order_sale_agent").innerHTML = "";
+    // document.getElementById("sample").innerHTML = 'hi';
+    return;
+  }
+  xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+    document.getElementById("main_order_sale_agent").innerHTML = this.responseText;
+
+    }
+  };
+  xhttp.open("GET", "getcustomer.php?id_user_name="+str+"", true);
+  xhttp.send();
+}
+function showCustomerUser2(str) {
+  var xhttp;    
+  if (str == "") {
+    document.getElementById("main_order_sale_agent2").innerHTML = "";
+    // document.getElementById("sample").innerHTML = 'hi';
+    return;
+  }
+  xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+    document.getElementById("main_order_sale_agent2").innerHTML = this.responseText;
+
+    }
+  };
+  xhttp.open("GET", "getcustomer.php?id_user_name2="+str+"", true);
+  xhttp.send();
+}
+
+function callTwoFunctions(str) {
+    showCustomerBalance(str);
+    showCustomerUser(str);
+    showCustomerUser2(str);
 }
 
 $(document).ready(function() {

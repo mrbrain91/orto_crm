@@ -1,4 +1,6 @@
 <?php
+include('settings.php');
+include('bot_lib.php');
 $mysqli = new mysqli("localhost", "root", "root", "orto_db");
 if($mysqli->connect_error) {
   exit('Could not connect');
@@ -80,6 +82,55 @@ if (isset($_GET['id_c'])) {
   <?php
   }
 
+
+  //get_balance 
+
+if (isset($_GET['id_user_name'])) {
+    $i = $_GET['id_user_name'];
+
+    $sql = "SELECT user_id FROM counterparties_tbl WHERE id = ?";
+    $stmt = $mysqli->prepare($sql);
+    $stmt->bind_param("s", $i);
+    $stmt->execute();
+    $stmt->store_result();
+    $stmt->bind_result($pn);
+    $stmt->fetch();
+    $stmt->close();
+
+    $user = get_user($connect, $pn); // Retrieve user information based on the user's ID
+    $userInfo = $user["name"] . " " . $user["surname"] . " " . $user["fathername"];
+
+    ?> 
+
+
+      <input readonly style="background-color:<?php echo "#fafafb"; ?>" type="text" class="form-control" value="<?php echo $userInfo; ?>">
+      
+      <?php
+}
+
+if (isset($_GET['id_user_name2'])) {
+  $i = $_GET['id_user_name2'];
+
+  $sql = "SELECT user_id FROM counterparties_tbl WHERE id = ?";
+  $stmt = $mysqli->prepare($sql);
+  $stmt->bind_param("s", $i);
+  $stmt->execute();
+  $stmt->store_result();
+  $stmt->bind_result($pn);
+  $stmt->fetch();
+  $stmt->close();
+
+  $user = get_user($connect, $pn); // Retrieve user information based on the user's ID
+  $userInfo = $user["surname"] . " " . $user["name"] . " " . $user["fathername"];
+
+  ?> 
+
+
+    <input name="main_order_sale_agent" hidden style="background-color:<?php echo "#fafafb"; ?>" type="text" class="form-control" value="<?php echo $pn; ?>">
+    
+    <?php
+}
+
   //get_balance supplier
 
 if (isset($_GET['id_s'])) {
@@ -115,7 +166,3 @@ if (isset($_GET['id_s'])) {
 
 
 ?>
-
-
-
-
