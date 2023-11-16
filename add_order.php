@@ -242,7 +242,7 @@ if(isset($_POST['submit']) && $_POST['submit'] == 'Принять') {
                         </div>
                     </td>
                     <td class="col-sm-1">
-                        <input required name="sale[]" type="number" placeholder="0" max="0" value="0" class="form-control sale" id='sale_1' for='1' form="order_form"/>        
+                        <input required name="sale[]" type="number" placeholder="0" value="0" class="form-control sale" id='sale_1' for='1' form="order_form"/>        
                     </td>
                     <td class="col-sm-1">
                         <input disabled type="text" name="after_sale[]" id='after_sale_1' value="0"  class="form-control product_price" for="1" form="order_form"/">
