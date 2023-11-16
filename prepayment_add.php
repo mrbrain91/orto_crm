@@ -11,8 +11,8 @@ $last_id = get_id_new_order($connect);
 
 
 if(isset($_POST['submit']) && $_POST['submit'] == 'Сохранить') {
-    
-        $id_sale_agent = $_POST['id_sale_agent'];
+
+        $id_sale_agent = $_POST['main_order_sale_agent'];
         $id_counterpartie = $_POST['id_counterpartie'];
         $prepayment_date = $_POST['prepayment_date'];
         $prepayment_sum = str_replace(' ', '', $_POST['prepayment_sum']);
@@ -99,16 +99,14 @@ $counterparties_tbl = mysqli_query ($connect, $sql);
                         <input required type="date" value="<?php echo date("Y-m-d"); ?>" class="form-control" name="prepayment_date">
                 </div>
                 <div class="col-md-3">
-                    <select required name="id_sale_agent" class="normalize">
-                        <option value="">--выберитe---</option>
-                        <?php    
-                            while ($option = mysqli_fetch_array($users_tbl)) {    
-                        ?>
-                            <option value="<?php echo $option["id"];?>"><?php echo $option["surname"]?> <?php echo $option["name"];?> <?php echo $option["fathername"];?></option>
-                        <?php       
-                            };    
-                        ?>
-                    </select>
+                    <div id="main_order_sale_agent">
+                        <input disabled type="text" class="form-control" value="">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div id="main_order_sale_agent2" style="visibility:hidden;">
+                        <input hidden name='main_order_sale_agent' type="text" class="form-control" value="">
+                    </div>
                 </div>
             </div>
             <div class="row mt">
@@ -121,7 +119,8 @@ $counterparties_tbl = mysqli_query ($connect, $sql);
             </div>
             <div class="row">
                 <div class="col-md-3"> 
-                <select required class="normalize" name="id_counterpartie" onchange="showCustomer(this.value)">
+                <!-- <select required class="normalize" name="id_counterpartie" onchange="showCustomer(this.value)"> -->
+                <select required class="normalize" name="id_counterpartie" onchange="callTwoFunctions(this.value)">
                         <option value=""></option>
                         <?php    
                             while ($option_contractor = mysqli_fetch_array($counterparties_tbl)) {    
@@ -223,6 +222,49 @@ function showCustomer(str) {
   xhttp.open("GET", "getcustomer.php?id_c="+str+"", true);
   xhttp.send();
 }
+
+function showCustomerUser(str) {
+  var xhttp;    
+  if (str == "") {
+    document.getElementById("main_order_sale_agent").innerHTML = "";
+    // document.getElementById("sample").innerHTML = 'hi';
+    return;
+  }
+  xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+    document.getElementById("main_order_sale_agent").innerHTML = this.responseText;
+
+    }
+  };
+  xhttp.open("GET", "getcustomer.php?id_user_name="+str+"", true);
+  xhttp.send();
+}
+function showCustomerUser2(str) {
+  var xhttp;    
+  if (str == "") {
+    document.getElementById("main_order_sale_agent2").innerHTML = "";
+    // document.getElementById("sample").innerHTML = 'hi';
+    return;
+  }
+  xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+    document.getElementById("main_order_sale_agent2").innerHTML = this.responseText;
+
+    }
+  };
+  xhttp.open("GET", "getcustomer.php?id_user_name2="+str+"", true);
+  xhttp.send();
+}
+
+
+function callTwoFunctions(str) {
+    showCustomer(str);
+    showCustomerUser(str);
+    showCustomerUser2(str);
+}
+
 
 
 </script>
